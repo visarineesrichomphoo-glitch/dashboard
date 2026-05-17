@@ -708,7 +708,8 @@ function parseMembers(rows) {
         age: r[4] || '',
         houseNo: r[5] || '',
         moo: r[6] || '',
-        village: r[7] || ''
+        village: r[7] || '',
+        memberSince: r[8] || ''
       });
     }
   }
@@ -1131,7 +1132,7 @@ function showMembers(clubName) {
     <div class="search-box"><input type="text" placeholder="ค้นหาสมาชิก..." oninput="filterMembers(this.value)"></div>
     <div class="table-wrap">
       <table class="member-table" id="member-table">
-        <thead><tr><th>ลำดับ</th><th>ชื่อ - สกุล</th><th>วัน-เดือน-ปี เกิด</th><th>อายุ</th><th>บ้านเลขที่</th><th>หมู่ที่</th><th>หมู่บ้าน</th></tr></thead>
+        <thead><tr><th>ลำดับ</th><th>ชื่อ - สกุล</th><th>วัน-เดือน-ปี เกิด</th><th>อายุ</th><th>บ้านเลขที่</th><th>หมู่ที่</th><th>หมู่บ้าน</th><th>เริ่มเป็นสมาชิก (พ.ศ.)</th></tr></thead>
         <tbody>
           ${members.map((m, i) => `
             <tr>
@@ -1142,6 +1143,7 @@ function showMembers(clubName) {
               <td>${m.houseNo}</td>
               <td>${m.moo}</td>
               <td>${m.village}</td>
+              <td style="text-align:center;font-weight:600;color:var(--primary)">${m.memberSince || '-'}</td>
             </tr>
           `).join('')}
         </tbody>
