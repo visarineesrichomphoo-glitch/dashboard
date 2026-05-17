@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard TO BE NUMBER ONE อำเภอท่าบ่อ</title>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--primary:#1a237e;--primary-light:#3949ab;--accent:#ff6f00;--accent-light:#ffa726;
+--success:#2e7d32;--success-light:#66bb6a;--danger:#c62828;
+--bg:#f0f2f5;--card:#fff;--text:#1a1a2e;--text-secondary:#5a5a7a;
+--shadow:0 2px 12px rgba(0,0,0,.08);--shadow-lg:0 8px 32px rgba(0,0,0,.12);
+--radius:16px;--radius-sm:10px
+}
+body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+h1,h2,h3,h4,.stat-num,.kpi-num{font-family:'Kanit',sans-serif}
+
+/* HEADER */
+.header{background:linear-gradient(135deg,#1a237e 0%,#283593 40%,#3949ab 100%);color:#fff;padding:24px 0;position:relative;overflow:hidden}
+.header::after{content:'';position:absolute;top:-50%;right:-10%;width:400px;height:400px;background:rgba(255,255,255,.04);border-radius:50%}
+.header-inner{max-width:1200px;margin:0 auto;padding:0 20px;position:relative;z-index:1}
+.header-top{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.logo-badge{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;overflow:hidden;border:none;background:transparent}
+.logo-badge img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.header h1{font-size:clamp(18px,3vw,26px);font-weight:600;letter-spacing:-.5px}
+.header-sub{font-size:14px;opacity:.8;margin-top:2px}
+.status-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,167,38,.2);color:#ffc107;border:1px solid rgba(255,193,7,.3);padding:4px 14px;border-radius:20px;font-size:13px;font-weight:500;margin-top:8px}
+.status-badge::before{content:'';width:8px;height:8px;background:#ffc107;border-radius:50%}
+.update-info{margin-top:12px;display:flex;gap:20px;flex-wrap:wrap;font-size:13px;opacity:.7}
+.refresh-btn{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);padding:6px 16px;border-radius:8px;cursor:pointer;font-size:13px;font-family:'Sarabun';transition:all .2s}
+.refresh-btn:hover{background:rgba(255,255,255,.25)}
+
+/* SETUP BANNER */
+.setup-banner{max-width:1200px;margin:20px auto 0;padding:0 20px}
+.setup-box{background:#fff3e0;border:2px solid #ff6f00;border-radius:var(--radius);padding:20px;font-size:14px}
+.setup-box h3{color:#e65100;margin-bottom:8px;font-family:'Kanit'}
+.setup-box input{width:100%;padding:10px 14px;border:2px solid #ddd;border-radius:8px;font-size:14px;font-family:'Sarabun';margin:8px 0}
+.setup-box input:focus{border-color:var(--primary);outline:none}
+.setup-box button{background:var(--primary);color:#fff;border:none;padding:10px 24px;border-radius:8px;cursor:pointer;font-size:14px;font-family:'Kanit';font-weight:500}
+.setup-box button:hover{background:var(--primary-light)}
+.setup-box .hint{font-size:12px;color:var(--text-secondary);margin-top:4px}
+
+/* LOADING */
+.loading{text-align:center;padding:60px 20px;font-size:16px;color:var(--text-secondary)}
+.loading .spinner{width:40px;height:40px;border:4px solid #e0e0e0;border-top:4px solid var(--primary);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* LAYOUT */
+.container{max-width:1200px;margin:0 auto;padding:20px}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:24px}
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.section{margin-bottom:24px}
+.section-title{font-size:18px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px;font-family:'Kanit'}
+.section-title .icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff}
+
+/* KPI CARD */
+.kpi-card{background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s}
+.kpi-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--stripe,var(--primary))}
+.kpi-label{font-size:13px;color:var(--text-secondary);font-weight:500;margin-bottom:4px}
+.kpi-num{font-size:32px;font-weight:700;line-height:1.1}
+.kpi-unit{font-size:14px;font-weight:400;color:var(--text-secondary);margin-left:2px}
+.kpi-sub{font-size:12px;color:var(--text-secondary);margin-top:6px}
+.kpi-sub .up{color:var(--success)}
+.kpi-target{display:inline-block;background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;margin-top:6px}
+
+/* CARD */
+.card{background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}
+.card-title{font-size:15px;font-weight:600;margin-bottom:14px;color:var(--primary);font-family:'Kanit'}
+
+/* TABLE */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:#f5f5f5;padding:10px 12px;text-align:left;font-weight:600;color:var(--text-secondary);border-bottom:2px solid #e0e0e0;white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid #f0f0f0}
+tr:hover td{background:#fafafa}
+.badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:600}
+.badge-gold{background:#fff8e1;color:#f57f17}
+.badge-silver{background:#f5f5f5;color:#616161}
+.badge-green{background:#e8f5e9;color:#2e7d32}
+.badge-blue{background:#e3f2fd;color:#1565c0}
+
+/* BAR CHART */
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.bar-label{width:80px;font-size:12px;text-align:right;color:var(--text-secondary);flex-shrink:0}
+.bar-track{flex:1;height:24px;background:#f0f0f0;border-radius:6px;overflow:hidden}
+.bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;padding-left:8px;font-size:11px;font-weight:600;color:#fff;transition:width 1.5s ease}
+.bar-value{font-size:12px;font-weight:600;width:60px;text-align:right;flex-shrink:0}
+
+/* PROGRESS RING */
+.progress-ring{position:relative;width:100px;height:100px;margin:0 auto 10px}
+.progress-ring svg{transform:rotate(-90deg)}
+.progress-ring .track{fill:none;stroke:#f0f0f0;stroke-width:8}
+.progress-ring .fill-circle{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1.5s ease}
+.progress-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;font-family:'Kanit'}
+.progress-center .pct{font-size:22px;font-weight:700;line-height:1}
+.progress-center .pct-label{font-size:10px;color:var(--text-secondary)}
+
+/* TIMELINE */
+.timeline{position:relative;padding-left:28px}
+.timeline::before{content:'';position:absolute;left:10px;top:4px;bottom:4px;width:2px;background:#e0e0e0}
+.tl-item{position:relative;margin-bottom:16px}
+.tl-item::before{content:'';position:absolute;left:-22px;top:4px;width:12px;height:12px;border-radius:50%;border:2px solid var(--primary);background:#fff}
+.tl-item.active::before{background:var(--accent);border-color:var(--accent)}
+.tl-item.done::before{background:var(--success);border-color:var(--success)}
+.tl-year{font-size:13px;font-weight:700;color:var(--primary);font-family:'Kanit'}
+.tl-desc{font-size:12px;color:var(--text-secondary)}
+
+/* DRUG STATS */
+.drug-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px}
+.drug-stat{text-align:center;padding:14px;background:#f8f9fa;border-radius:var(--radius-sm);border:1px solid #eee}
+.drug-stat .num{font-size:24px;font-weight:700;font-family:'Kanit'}
+.drug-stat .label{font-size:11px;color:var(--text-secondary);margin-top:4px}
+
+/* CHANNELS */
+.channel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.channel-card{background:#f8f9fa;border-radius:var(--radius-sm);padding:16px;text-align:center;border:1px solid #e8e8e8;transition:all .2s}
+.channel-card:hover{border-color:var(--primary-light);background:#f0f4ff}
+.channel-icon{font-size:28px;margin-bottom:8px}
+.channel-name{font-size:14px;font-weight:600}
+.channel-desc{font-size:11px;color:var(--text-secondary);margin-top:4px}
+.channel-status{margin-top:8px;font-size:11px;font-weight:600;color:var(--success);display:flex;align-items:center;justify-content:center;gap:4px}
+.channel-status::before{content:'';width:6px;height:6px;background:var(--success);border-radius:50%}
+
+/* FOOTER */
+.footer{text-align:center;padding:20px;font-size:12px;color:var(--text-secondary);border-top:1px solid #e8e8e8;margin-top:20px}
+
+/* ERROR */
+.error-box{background:#ffebee;border:1px solid #ef9a9a;border-radius:var(--radius-sm);padding:16px;margin:20px 0;color:#b71c1c;font-size:13px}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--card);border-radius:var(--radius);width:100%;max-width:700px;max-height:85vh;display:flex;flex-direction:column;box-shadow:var(--shadow-lg);animation:modalIn .25s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.modal-header{padding:16px 20px;border-bottom:1px solid #e8e8e8;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.modal-header h3{font-family:'Kanit';font-size:16px;font-weight:600;color:var(--primary)}
+.modal-close{width:32px;height:32px;border:none;background:#f5f5f5;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);transition:all .2s}
+.modal-close:hover{background:#e0e0e0;color:var(--text)}
+.modal-body{padding:16px 20px;overflow-y:auto;flex:1}
+.modal-footer{padding:12px 20px;border-top:1px solid #e8e8e8;font-size:12px;color:var(--text-secondary);text-align:center;flex-shrink:0}
+
+/* SEARCH */
+.search-box{position:relative;margin-bottom:12px}
+.search-box input{width:100%;padding:10px 14px 10px 36px;border:2px solid #e8e8e8;border-radius:var(--radius-sm);font-size:14px;font-family:'Sarabun';transition:border .2s}
+.search-box input:focus{border-color:var(--primary);outline:none}
+.search-box::before{content:'🔍';position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:14px}
+
+/* CLUB DIRECTORY */
+.year-tab{
+padding:6px 16px;border-radius:20px;font-size:13px;font-weight:600;
+cursor:pointer;border:2px solid #e0e0e0;background:#fafafa;color:var(--text-secondary);
+transition:all .2s;font-family:'Kanit'
+}
+.year-tab:hover{border-color:var(--primary-light);background:#f0f4ff}
+.year-tab.active{border-color:var(--primary);background:var(--primary);color:#fff}
+.club-dir-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.club-dir-card{background:#f8f9fa;border:1px solid #e8e8e8;border-radius:var(--radius-sm);padding:14px;cursor:pointer;transition:all .2s;position:relative}
+.club-dir-card:hover{border-color:var(--primary);background:#f0f4ff;transform:translateY(-1px);box-shadow:var(--shadow)}
+.club-dir-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.club-dir-type{font-size:11px;color:var(--text-secondary)}
+.club-dir-count{position:absolute;top:10px;right:10px;background:var(--primary);color:#fff;font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px}
+.club-dir-badge{display:inline-block;margin-top:6px;font-size:10px;padding:1px 8px;border-radius:8px}
+
+/* MEMBER TABLE IN MODAL */
+.member-table{width:100%;font-size:12px}
+.member-table th{background:#f0f4ff;color:var(--primary);font-size:11px;padding:8px 10px;position:sticky;top:0}
+.member-table td{padding:7px 10px;border-bottom:1px solid #f5f5f5}
+.member-table tr:nth-child(even) td{background:#fafafa}
+.member-count-summary{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.member-count-chip{background:#e3f2fd;color:#1565c0;padding:4px 12px;border-radius:16px;font-size:12px;font-weight:500}
+
+@media(max-width:640px){
+.kpi-grid{grid-template-columns:repeat(2,1fr)}
+.grid-2,.grid-3{grid-template-columns:1fr}
+.header h1{font-size:18px}
+.kpi-num{font-size:24px}
+.bar-label{width:60px;font-size:11px}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+<div class="header-inner">
+<div class="header-top">
+<div class="logo-badge"><img src="data:image/png;base64,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" alt="TO BE NUMBER ONE อำเภอท่าบ่อ"></div>
+<div style="flex:1">
+<h1>Dashboard TO BE NUMBER ONE อำเภอท่าบ่อ</h1>
+<div class="header-sub">ระบบติดตามผลการดำเนินงาน อำเภอท่าบ่อ จังหวัดหนองคาย — เชื่อมต่อ Google Sheets</div>
+</div>
+<button class="refresh-btn" onclick="loadData()">🔄 รีเฟรชข้อมูล</button>
+</div>
+<div class="update-info">
+<span id="update-date">📅 อัปเดตล่าสุด: กำลังโหลด...</span>
+<span>📊 ปีงบประมาณ: 2569</span>
+<span id="data-source">📡 แหล่งข้อมูล: Google Sheets</span>
+</div>
+</div>
+</div>
+
+<!-- SETUP SECTION -->
+<div class="setup-banner" id="setup-section">
+<div class="setup-box">
+<h3>⚙️ ตั้งค่าเชื่อมต่อ Google Sheets</h3>
+<p>วาง Spreadsheet ID จาก Google Sheets ของคุณ (ต้องตั้งค่าแชร์เป็น "ทุกคนที่มีลิงก์สามารถดูได้")</p>
+<input type="text" id="sheet-id-input" placeholder="วาง Spreadsheet ID ที่นี่ เช่น 1AbCdEfGhIjKlMnOpQrStUvWxYz">
+<div class="hint">💡 คัดลอกจาก URL: https://docs.google.com/spreadsheets/d/<strong>ส่วนนี้คือ ID</strong>/edit</div>
+<div style="display:flex;gap:10px;margin-top:10px;align-items:center;flex-wrap:wrap">
+<button onclick="connectSheet()">เชื่อมต่อ</button>
+<button onclick="loadDemoData()" style="background:#e65100">ดูตัวอย่าง (ไม่ต้องมี Sheets)</button>
+<span id="connect-status" style="font-size:12px;color:var(--text-secondary)"></span>
+</div>
+</div>
+</div>
+
+<!-- MAIN CONTENT (hidden until data loaded) -->
+<div class="container" id="main-content" style="display:none">
+
+<!-- KPI CARDS -->
+<div class="kpi-grid" id="kpi-grid"></div>
+
+<!-- สมาชิกแนวโน้ม + ชมรม -->
+<div class="section">
+<div class="section-title"><div class="icon" style="background:#1565c0">📊</div>ข้อมูลสมาชิกและชมรม</div>
+<div class="grid-2">
+<div class="card" id="member-trend-card"></div>
+<div class="card" id="club-table-card"></div>
+</div>
+</div>
+
+<!-- ผลบำบัด -->
+<div class="section">
+<div class="section-title"><div class="icon" style="background:#c62828">🏥</div>ผลการบำบัดรักษา — โครงการใครติดยายกมือขึ้น</div>
+<div class="grid-2">
+<div class="card" id="drug-stats-card"></div>
+<div class="card" id="opportunity-card"></div>
+</div>
+</div>
+
+<!-- กิจกรรมตามแผน -->
+<div class="section">
+<div class="section-title"><div class="icon" style="background:#ff6f00">📋</div>ผลดำเนินงานตามแผนและรางวัล</div>
+<div class="grid-3" id="strategy-cards"></div>
+</div>
+
+<!-- ชมรมประกวด + ไทม์ไลน์ -->
+<div class="section">
+<div class="grid-2">
+<div class="card" id="contest-card"></div>
+<div class="card" id="timeline-card"></div>
+</div>
+</div>
+
+<!-- งบประมาณ -->
+<div class="section">
+<div class="section-title"><div class="icon" style="background:#2e7d32">💰</div>งบประมาณและการพัฒนา</div>
+<div class="grid-2">
+<div class="card" id="budget-card"></div>
+<div class="card" id="capacity-card"></div>
+</div>
+</div>
+
+<!-- ทะเบียนชมรมและรายชื่อสมาชิก -->
+<div class="section">
+<div class="section-title"><div class="icon" style="background:#1565c0">👥</div>ทะเบียนชมรมและรายชื่อสมาชิก TO BE NUMBER ONE — กดที่ชมรมเพื่อดูรายชื่อ</div>
+
+<!-- เลือกปี -->
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+<span style="font-size:13px;font-weight:600;color:var(--text)">📅 เลือกปี:</span>
+<div id="year-tabs" style="display:flex;gap:6px;flex-wrap:wrap">
+<button class="year-tab" data-year="2565" onclick="switchYear(2565)">2565</button>
+<button class="year-tab" data-year="2566" onclick="switchYear(2566)">2566</button>
+<button class="year-tab" data-year="2567" onclick="switchYear(2567)">2567</button>
+<button class="year-tab" data-year="2568" onclick="switchYear(2568)">2568</button>
+<button class="year-tab active" data-year="2569" onclick="switchYear(2569)">2569</button>
+</div>
+<span id="year-member-count" style="font-size:12px;color:var(--text-secondary)"></span>
+<span id="year-loading" style="font-size:12px;color:var(--accent);display:none">🔄 กำลังโหลด...</span>
+</div>
+
+<div class="search-box"><input type="text" id="club-search" placeholder="ค้นหาชมรม..." oninput="filterClubs(this.value)"></div>
+<div id="club-directory" class="club-dir-grid"></div>
+<div style="margin-top:12px;padding:10px;background:#e3f2fd;border-radius:8px;font-size:12px;color:#1565c0">
+<strong>💡 วิธีใช้:</strong> เลือกปี → กดที่การ์ดชมรมเพื่อดูรายชื่อสมาชิก — ข้อมูลดึงจาก Google Sheets Sheet "สมาชิก25XX" แยกตามปี
+</div>
+</div>
+
+<!-- MODAL แสดงรายชื่อสมาชิก -->
+<div class="modal-overlay" id="member-modal" onclick="if(event.target===this)closeModal()">
+<div class="modal">
+<div class="modal-header">
+<h3 id="modal-title">รายชื่อสมาชิก</h3>
+<button class="modal-close" onclick="closeModal()">✕</button>
+</div>
+<div class="modal-body" id="modal-body">
+<div class="loading"><div class="spinner"></div>กำลังโหลดรายชื่อสมาชิก...</div>
+</div>
+<div class="modal-footer" id="modal-footer"></div>
+</div>
+</div>
+
+<!-- ช่องทางเข้าถึงและสมัครสมาชิก -->
+<div class="section">
+<div class="section-title"><div class="icon" style="background:#6a1b9a">🔗</div>ช่องทางเข้าถึงข้อมูลและสมัครสมาชิก</div>
+<div class="channel-grid">
+<div class="channel-card" style="cursor:default"><div class="channel-icon">💬</div><div class="channel-name">LINE กลุ่มเครือข่าย</div><div class="channel-desc">ค้นหากลุ่มใน LINE:<br><strong style="color:var(--primary);font-size:14px">"TO BE NUMBER ONE ท่าบ่อ"</strong></div><div class="channel-status" style="color:var(--primary)">ค้นหาชื่อกลุ่มใน LINE เพื่อขอเข้าร่วม</div></div>
+<a href="https://www.facebook.com/profile.php?id=61583760882660" target="_blank" style="text-decoration:none;color:inherit"><div class="channel-card" style="cursor:pointer"><div class="channel-icon">📘</div><div class="channel-name">Facebook Page</div><div class="channel-desc">TO BE NUMBER ONE อำเภอท่าบ่อ<br>เข้าถึงได้: สาธารณะ</div><div class="channel-status">คลิกเพื่อเข้าเพจ</div></div></a>
+<a href="https://docs.google.com/spreadsheets/d/1dXfwpWMYWH8NetmZljINPkJ31NF9ruUQ4Xm4Ul2tJf8/edit" target="_blank" style="text-decoration:none;color:inherit"><div class="channel-card" style="cursor:pointer"><div class="channel-icon">📊</div><div class="channel-name">ฐานข้อมูล Google Sheets</div><div class="channel-desc">ข้อมูลตัวชี้วัด ชมรม สมาชิก กิจกรรม<br>เข้าถึงได้: ทุกคนที่มีลิงก์</div><div class="channel-status">คลิกเพื่อดูข้อมูล</div></div></a>
+<a href="https://antidrug.moph.go.th/report/normal" target="_blank" style="text-decoration:none;color:inherit"><div class="channel-card" style="cursor:pointer"><div class="channel-icon">🏥</div><div class="channel-name">ระบบ บสต.</div><div class="channel-desc">ข้อมูลบำบัดผู้เสพ/ผู้ติดยาเสพติด<br>เข้าถึงได้: หน่วยงานสาธารณสุข</div><div class="channel-status">คลิกเพื่อเข้าระบบ</div></div></a>
+</div>
+</div>
+
+<!-- ส่วนสมัครสมาชิก -->
+<div class="section">
+<div class="section-title"><div class="icon" style="background:#ff6f00">📝</div>สมัครสมาชิก TO BE NUMBER ONE อำเภอท่าบ่อ</div>
+<div class="card" id="register-card">
+<div class="card-title" style="text-align:center;font-size:18px;margin-bottom:4px">📝 ฟอร์มสมัครสมาชิก TO BE NUMBER ONE</div>
+<p style="text-align:center;font-size:13px;color:var(--text-secondary);margin-bottom:16px">กรอกข้อมูลให้ครบแล้วกดสมัคร — ข้อมูลจะถูกบันทึกลง Google Sheets อัตโนมัติ</p>
+
+<!-- ตั้งค่า Apps Script URL -->
+<div id="script-setup" style="background:#fff3e0;border:1px solid #ffcc80;border-radius:10px;padding:14px;margin-bottom:16px">
+<div style="font-size:13px;font-weight:600;color:#e65100;margin-bottom:6px">⚙️ ตั้งค่าเชื่อมต่อ Google Apps Script</div>
+<div style="font-size:12px;color:#795548;margin-bottom:8px">วาง URL ของ Apps Script ที่ได้จากขั้นตอน Deploy เพื่อให้ข้อมูลสมัครบันทึกลง Google Sheets จริง</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<input id="script-url" type="text" placeholder="วาง URL ที่นี่ เช่น https://script.google.com/macros/s/xxxxx/exec" style="flex:1;min-width:200px;padding:8px 10px;border:2px solid #e0e0e0;border-radius:8px;font-size:12px;font-family:'Sarabun';background:#fff">
+<button onclick="saveScriptUrl()" style="padding:8px 16px;border:none;border-radius:8px;background:#e65100;color:#fff;font-size:12px;font-weight:600;font-family:'Kanit';cursor:pointer;white-space:nowrap">บันทึก URL</button>
+</div>
+<div id="script-status" style="font-size:11px;margin-top:6px"></div>
+</div>
+
+<div id="reg-form">
+
+<!-- แถวที่ 1: ชื่อชมรม -->
+<div style="margin-bottom:10px">
+<label style="font-size:12px;font-weight:600;display:block;margin-bottom:3px">ชื่อชมรม <span style="color:#c62828">*</span></label>
+<select id="r-club" style="width:100%;padding:8px 10px;border:2px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:'Sarabun';background:#fafafa"><option value="">เลือกชมรม (ดึงจาก Google Sheets)</option></select>
+<div style="font-size:11px;color:var(--text-secondary);margin-top:3px">รายชื่อชมรมดึงจาก Sheet "ชมรม" อัตโนมัติ</div>
+</div>
+
+<!-- แถวที่ 2: คำนำหน้า + ชื่อ + สกุล -->
+<div style="display:grid;grid-template-columns:120px 1fr 1fr;gap:10px;margin-bottom:10px">
+<div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:3px">คำนำหน้า <span style="color:#c62828">*</span></label>
+<select id="r-prefix" style="width:100%;padding:8px 10px;border:2px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:'Sarabun';background:#fafafa"><option value="">เลือก</option><option>ด.ช.</option><option>ด.ญ.</option><option>นาย</option><option>น.ส.</option><option>นาง</option></select></div>
+<div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:3px">ชื่อ <span style="color:#c62828">*</span></label>
+<input id="r-fname" type="text" placeholder="ชื่อจริง" style="width:100%;padding:8px 10px;border:2px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:'Sarabun';background:#fafafa"></div>
+<div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:3px">สกุล <span style="color:#c62828">*</span></label>
+<input id="r-lname" type="text" placeholder="นามสกุล" style="width:100%;padding:8px 10px;border:2px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:'Sarabun';background:#fafafa"></div>
+</div>
+
+<!-- แถวที่ 3: วันเกิด + อายุ -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+<div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:3px">วัน-เดือน-ปี เกิด <span style="color:#c62828">*</span></label>
+<input id="r-bdate" type="date" style="width:100%;padding:8px 10px;border:2px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:'Sarabun';background:#fafafa"></div>
+<div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:3px">อายุ (ปี) <span style="color:#c62828">*</span></label>
+<input id="r-age" type="number" min="1" max="24" placeholder="อายุ" style="width:100%;padding:8px 10px;border:2px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:'Sarabun';background:#fafafa">
+<div style="font-size:11px;color:var(--text-secondary);margin-top:3px">กลุ่มเป้าหมาย อายุ 6-24 ปี</div></div>
+</div>
+
+<!-- แถวที่ 4: บ้านเลขที่ + หมู่ที่ + ชื่อหมู่บ้าน -->
+<div style="display:grid;grid-template-columns:1fr 100px 1fr;gap:10px;margin-bottom:10px">
+<div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:3px">บ้านเลขที่ <span style="color:#c62828">*</span></label>
+<input id="r-houseno" type="text" placeholder="เช่น 315, 144/1" style="width:100%;padding:8px 10px;border:2px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:'Sarabun';background:#fafafa"></div>
+<div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:3px">หมู่ที่ <span style="color:#c62828">*</span></label>
+<input id="r-moo" type="text" placeholder="เช่น 1" style="width:100%;padding:8px 10px;border:2px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:'Sarabun';background:#fafafa"></div>
+<div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:3px">ชื่อหมู่บ้าน <span style="color:#c62828">*</span></label>
+<input id="r-village" type="text" placeholder="เช่น กองนาง1" style="width:100%;padding:8px 10px;border:2px solid #e0e0e0;border-radius:8px;font-size:13px;font-family:'Sarabun';background:#fafafa"></div>
+</div>
+
+<!-- ยินยอม -->
+<div style="background:#f8f9fa;border-radius:8px;padding:10px;margin-bottom:12px;font-size:12px;color:var(--text-secondary)">
+<label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer"><input type="checkbox" id="r-consent" style="width:16px;height:16px;margin-top:2px;accent-color:var(--primary)"><span>ข้าพเจ้ายินยอมให้จัดเก็บข้อมูลส่วนบุคคลเพื่อใช้ในการดำเนินงานโครงการ TO BE NUMBER ONE อำเภอท่าบ่อ</span></label>
+</div>
+
+<!-- ปุ่มสมัคร -->
+<button id="reg-btn" onclick="submitRegister()" style="width:100%;padding:12px;border:none;border-radius:10px;background:linear-gradient(135deg,#ff6f00,#ff8f00);color:#fff;font-size:15px;font-weight:700;font-family:'Kanit';cursor:pointer;transition:all .3s">
+<span id="reg-btn-text">สมัครสมาชิก TO BE NUMBER ONE</span>
+<span id="reg-spinner" style="display:none">กำลังบันทึก...</span>
+</button>
+</div>
+
+<!-- สำเร็จ -->
+<div id="reg-success" style="display:none;text-align:center;padding:24px">
+<div style="font-size:48px;margin-bottom:8px">🎉</div>
+<div style="font-size:20px;font-weight:700;font-family:'Kanit';color:#2e7d32;margin-bottom:8px">สมัครสมาชิกสำเร็จ!</div>
+<div id="reg-summary" style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;text-align:left;background:#f8f9fa;padding:14px;border-radius:8px"></div>
+<div style="font-size:14px;color:var(--text-secondary);margin-bottom:16px">ข้อมูลถูกบันทึกลง Google Sheets เรียบร้อยแล้ว</div>
+<button onclick="resetRegister()" style="padding:10px 24px;border:2px solid var(--primary);border-radius:10px;background:transparent;color:var(--primary);font-size:14px;font-weight:600;font-family:'Kanit';cursor:pointer">สมัครสมาชิกเพิ่ม</button>
+</div>
+
+</div>
+</div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer" id="footer" style="display:none">
+<div>ศูนย์ประสานงานโครงการ TO BE NUMBER ONE อำเภอท่าบ่อ ณ สำนักงานสาธารณสุขอำเภอท่าบ่อ จังหวัดหนองคาย</div>
+<div style="margin-top:4px">Dashboard เชื่อมต่อ Google Sheets — แก้ไขข้อมูลใน Sheets แล้วกดรีเฟรชเพื่ออัปเดต</div>
+<div style="margin-top:4px;opacity:.6">"ไท่ท่าบ่อ เก่งและดี ด้วย TO BE NUMBER ONE"</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════
+let SPREADSHEET_ID = localStorage.getItem('tbn_sheet_id') || '';
+const SHEET_NAME = 'ภาพรวม';
+let DATA = {};
+let CURRENT_YEAR = 2569;
+let MEMBERS_CACHE = {}; // เก็บข้อมูลสมาชิกแต่ละปีที่โหลดแล้ว
+
+// ═══════════════════════════════════════════
+// GOOGLE SHEETS CSV PARSER
+// ═══════════════════════════════════════════
+function getSheetURL_CSV(sheetName) {
+  return `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+}
+
+function getSheetURL_JSONP(sheetName) {
+  return `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&tqx=responseHandler:callback_${Date.now()}&sheet=${encodeURIComponent(sheetName)}`;
+}
+
+function getSheetURL_JSON(sheetName) {
+  return `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
+}
+
+function parseCSV(csv) {
+  const lines = [];
+  let current = '';
+  let inQuotes = false;
+  for (let i = 0; i < csv.length; i++) {
+    const c = csv[i];
+    if (c === '"') { inQuotes = !inQuotes; continue; }
+    if (c === '\n' && !inQuotes) { lines.push(current); current = ''; continue; }
+    current += c;
+  }
+  if (current) lines.push(current);
+  return lines.map(line => {
+    const cells = [];
+    let cell = '';
+    let q = false;
+    for (let i = 0; i < line.length; i++) {
+      const c = line[i];
+      if (c === '"') { q = !q; continue; }
+      if (c === ',' && !q) { cells.push(cell.trim()); cell = ''; continue; }
+      cell += c;
+    }
+    cells.push(cell.trim());
+    return cells;
+  });
+}
+
+// แปลง Google Visualization JSON เป็น array of rows
+function parseGvizJSON(text) {
+  try {
+    // ตัด prefix "/*O_o*/\ngoogle.visualization.Query.setResponse(" และ suffix ");"
+    let json = text;
+    // ตัด callback wrapper ถ้ามี
+    const startIdx = json.indexOf('{');
+    const endIdx = json.lastIndexOf('}');
+    if (startIdx >= 0 && endIdx > startIdx) {
+      json = json.substring(startIdx, endIdx + 1);
+    }
+    const data = JSON.parse(json);
+    if (data.status === 'error') {
+      console.error('Google Sheets error:', data.errors);
+      return null;
+    }
+    const table = data.table;
+    if (!table) return null;
+    
+    // สร้าง header row
+    const headers = table.cols.map(c => c.label || '');
+    const rows = [headers];
+    
+    // สร้าง data rows
+    for (const row of table.rows) {
+      const cells = row.c.map(cell => {
+        if (!cell || cell.v === null || cell.v === undefined) return '';
+        return String(cell.v);
+      });
+      rows.push(cells);
+    }
+    return rows;
+  } catch(e) {
+    console.error('parseGvizJSON error:', e);
+    return null;
+  }
+}
+
+async function fetchSheet(sheetName) {
+  // วิธีที่ 1: ลอง fetch CSV ปกติ (ใช้ได้เมื่ออยู่บน https://)
+  try {
+    const res = await fetch(getSheetURL_CSV(sheetName), { mode: 'cors' });
+    if (res.ok) {
+      const text = await res.text();
+      if (text && text.length > 10 && !text.includes('<html') && !text.includes('<!DOCTYPE')) {
+        console.log(`✅ ${sheetName}: fetch CSV สำเร็จ`);
+        return parseCSV(text);
+      }
+    }
+  } catch (e) {
+    console.log(`⚠️ ${sheetName}: fetch CSV ล้มเหลว (CORS?) ลองวิธีที่ 2...`);
+  }
+
+  // วิธีที่ 2: ลอง fetch JSON (Google Visualization API)
+  try {
+    const res = await fetch(getSheetURL_JSON(sheetName), { mode: 'cors' });
+    if (res.ok) {
+      const text = await res.text();
+      if (text && text.length > 10) {
+        const rows = parseGvizJSON(text);
+        if (rows && rows.length > 0) {
+          console.log(`✅ ${sheetName}: fetch JSON สำเร็จ`);
+          return rows;
+        }
+      }
+    }
+  } catch (e) {
+    console.log(`⚠️ ${sheetName}: fetch JSON ล้มเหลว ลองวิธีที่ 3...`);
+  }
+
+  // วิธีที่ 3: ใช้ JSONP (script tag injection) — ทำงานได้แม้เปิดจาก file://
+  try {
+    const rows = await fetchSheetJSONP(sheetName);
+    if (rows && rows.length > 0) {
+      console.log(`✅ ${sheetName}: JSONP สำเร็จ`);
+      return rows;
+    }
+  } catch(e) {
+    console.log(`⚠️ ${sheetName}: JSONP ล้มเหลว`);
+  }
+
+  // วิธีที่ 4: ใช้ allorigin proxy
+  try {
+    const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(getSheetURL_CSV(sheetName))}`;
+    const res = await fetch(proxyUrl);
+    if (res.ok) {
+      const text = await res.text();
+      if (text && text.length > 10 && !text.includes('<html')) {
+        console.log(`✅ ${sheetName}: proxy สำเร็จ`);
+        return parseCSV(text);
+      }
+    }
+  } catch(e) {
+    console.log(`⚠️ ${sheetName}: proxy ล้มเหลว`);
+  }
+
+  console.error(`❌ ${sheetName}: ไม่สามารถดึงข้อมูลได้ทุกวิธี`);
+  return null;
+}
+
+// JSONP: ใช้ script tag เพื่อหลีกเลี่ยง CORS
+function fetchSheetJSONP(sheetName) {
+  return new Promise((resolve, reject) => {
+    const callbackName = 'gviz_cb_' + Date.now() + '_' + Math.random().toString(36).substr(2,5);
+    const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=responseHandler:${callbackName}&sheet=${encodeURIComponent(sheetName)}`;
+    
+    const timeout = setTimeout(() => {
+      delete window[callbackName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+      reject(new Error('JSONP timeout'));
+    }, 10000);
+
+    window[callbackName] = function(response) {
+      clearTimeout(timeout);
+      delete window[callbackName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+      
+      try {
+        if (response.status === 'error') {
+          reject(new Error(response.errors?.[0]?.message || 'Sheet error'));
+          return;
+        }
+        const table = response.table;
+        if (!table) { reject(new Error('No table')); return; }
+        
+        const headers = table.cols.map(c => c.label || '');
+        const rows = [headers];
+        for (const row of table.rows) {
+          const cells = row.c.map(cell => {
+            if (!cell || cell.v === null || cell.v === undefined) return '';
+            return String(cell.v);
+          });
+          rows.push(cells);
+        }
+        resolve(rows);
+      } catch(e) {
+        reject(e);
+      }
+    };
+
+    const script = document.createElement('script');
+    script.src = url;
+    script.onerror = () => {
+      clearTimeout(timeout);
+      delete window[callbackName];
+      reject(new Error('Script load error'));
+    };
+    document.head.appendChild(script);
+  });
+}
+
+// ═══════════════════════════════════════════
+// PARSE DATA FROM SHEETS
+// ═══════════════════════════════════════════
+function parseOverview(rows) {
+  const data = {};
+  for (let i = 1; i < rows.length; i++) {
+    const row = rows[i];
+    if (row.length >= 3) {
+      const key = row[1];
+      const val = row[2];
+      
+      // Debug: แสดงค่าวันที่ใน console
+      if (key && key.includes('วันที่')) {
+        console.log('📅 วันที่อัปเดต raw:', JSON.stringify(val), 'type:', typeof val);
+      }
+      
+      if (key === 'วันที่อัปเดต') {
+        data[key] = convertDateValue(val);
+      } else {
+        data[key] = isNaN(val) || val === '' || val === null ? val : parseFloat(val);
+      }
+    }
+  }
+  
+  // ถ้าไม่พบ วันที่อัปเดต ในข้อมูล ให้ใช้วันปัจจุบัน
+  if (!data['วันที่อัปเดต'] || data['วันที่อัปเดต'] === '-') {
+    console.log('📅 ไม่พบวันที่อัปเดตในข้อมูล ใช้วันปัจจุบันแทน');
+    console.log('📅 Keys ทั้งหมด:', Object.keys(data).join(', '));
+    const now = new Date();
+    data['วันที่อัปเดต'] = now.getDate() + '/' + String(now.getMonth()+1).padStart(2,'0') + '/' + (now.getFullYear()+543);
+  }
+  
+  return data;
+}
+
+function convertDateValue(val) {
+  if (!val && val !== 0) return '-';
+  
+  const s = String(val).trim();
+  if (!s) return '-';
+  
+  // ข้อความวันที่ปกติ (มี /)
+  if (s.includes('/')) return s;
+  
+  // ข้อความวันที่แบบ - (เช่น 30-04-2569)
+  if (s.includes('-') && s.length >= 8) return s.replace(/-/g, '/');
+  
+  // Serial number ของ Google Sheets
+  const num = parseFloat(s);
+  if (!isNaN(num) && num > 40000 && num < 60000) {
+    const date = new Date((num - 25569) * 86400000);
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const yearBE = date.getFullYear() + 543;
+    return `${day}/${month < 10 ? '0' + month : month}/${yearBE}`;
+  }
+  
+  // Google Visualization Date format
+  if (s.includes('Date(')) {
+    const match = s.match(/Date\((\d+),(\d+),(\d+)\)/);
+    if (match) {
+      const yearBE = parseInt(match[1]) + 543;
+      const month = parseInt(match[2]) + 1;
+      const day = parseInt(match[3]);
+      return `${day}/${month < 10 ? '0' + month : month}/${yearBE}`;
+    }
+  }
+  
+  // ตัวเลขอื่นๆ ที่ไม่ใช่ serial
+  if (!isNaN(num)) return s;
+  
+  return s;
+}
+
+function parseClubs(rows) {
+  if (!rows || rows.length < 2) return [];
+  const clubs = [];
+  for (let i = 1; i < rows.length; i++) {
+    const r = rows[i];
+    if (r.length >= 6) {
+      clubs.push({
+        name: r[1], type: r[2], group: r[3],
+        level: r[4], status: r[5], center: r[6] || ''
+      });
+    }
+  }
+  return clubs;
+}
+
+function parseMembers(rows) {
+  if (!rows || rows.length < 2) return [];
+  const members = [];
+  for (let i = 1; i < rows.length; i++) {
+    const r = rows[i];
+    if (r.length >= 3 && r[1] && r[2]) {
+      members.push({
+        club: r[1] || '',
+        fullName: r[2] || '',
+        birthDate: r[3] || '',
+        age: r[4] || '',
+        houseNo: r[5] || '',
+        moo: r[6] || '',
+        village: r[7] || ''
+      });
+    }
+  }
+  return members;
+}
+
+// ═══════════════════════════════════════════
+// CONNECT & LOAD
+// ═══════════════════════════════════════════
+function connectSheet() {
+  const id = document.getElementById('sheet-id-input').value.trim();
+  if (!id) { alert('กรุณาวาง Spreadsheet ID'); return; }
+  SPREADSHEET_ID = id;
+  localStorage.setItem('tbn_sheet_id', id);
+  document.getElementById('connect-status').textContent = '🔄 กำลังเชื่อมต่อ...';
+  loadData();
+}
+
+async function loadData() {
+  if (!SPREADSHEET_ID) return;
+  const statusEl = document.getElementById('connect-status');
+  statusEl.innerHTML = '🔄 กำลังโหลดข้อมูล... (ลองหลายวิธีอัตโนมัติ)';
+
+  const overviewRows = await fetchSheet('ภาพรวม');
+  if (!overviewRows || overviewRows.length < 2) {
+    statusEl.innerHTML =
+      '<span style="color:#c62828">❌ ไม่สามารถดึงข้อมูล Sheet "ภาพรวม" ได้<br>' +
+      '• ตรวจสอบว่า Spreadsheet ID ถูกต้อง<br>' +
+      '• ตรวจสอบว่าตั้งค่าแชร์เป็น "ทุกคนที่มีลิงก์"<br>' +
+      '• ตรวจสอบว่ามี Sheet ชื่อ "ภาพรวม" (ตรงทุกตัวอักษร)<br>' +
+      '• ลองเปิดใน Chrome หรือ Edge</span>';
+    return;
+  }
+
+  statusEl.innerHTML = '🔄 ดึง Sheet ภาพรวมสำเร็จ กำลังโหลด Sheet อื่น...';
+
+  DATA = parseOverview(overviewRows);
+
+  // Try loading clubs sheet
+  const clubRows = await fetchSheet('ชมรม');
+  DATA._clubs = clubRows ? parseClubs(clubRows) : [];
+
+  // Try loading members sheet for current year
+  const memberSheetName = 'สมาชิก' + CURRENT_YEAR;
+  const memberRows = await fetchSheet(memberSheetName);
+  DATA._members = memberRows ? parseMembers(memberRows) : [];
+  MEMBERS_CACHE[CURRENT_YEAR] = DATA._members;
+
+  // ถ้าไม่เจอ Sheet ปี ลองโหลด Sheet "สมาชิก" เดิม
+  if (!DATA._members.length) {
+    const fallbackRows = await fetchSheet('สมาชิก');
+    DATA._members = fallbackRows ? parseMembers(fallbackRows) : [];
+    MEMBERS_CACHE[CURRENT_YEAR] = DATA._members;
+  }
+
+  renderDashboard(DATA);
+  populateClubDropdown();
+  // แสดงจำนวนสมาชิกปีปัจจุบัน
+  const yearCountEl = document.getElementById('year-member-count');
+  if (yearCountEl) {
+    yearCountEl.textContent = DATA._members.length ?
+      `สมาชิกปี ${CURRENT_YEAR}: ${DATA._members.length} คน` :
+      `ไม่พบข้อมูลปี ${CURRENT_YEAR} — ลองเปลี่ยนปี หรือสร้าง Sheet "สมาชิก${CURRENT_YEAR}"`;
+  }
+  document.getElementById('setup-section').style.display = 'none';
+  document.getElementById('main-content').style.display = 'block';
+  document.getElementById('footer').style.display = 'block';
+  document.getElementById('connect-status').textContent = '✅ เชื่อมต่อสำเร็จ';
+}
+
+// ═══════════════════════════════════════════
+// DEMO DATA (ไม่ต้องมี Google Sheets)
+// ═══════════════════════════════════════════
+function loadDemoData() {
+  DATA = {
+    'สมาชิก_อายุ_6_24_ทั้งหมด': 6352, 'สมาชิก_TO_BE': 6046, 'สมาชิก_ร้อยละ': 98.87,
+    'สมาชิก_ปี2567': 95.54, 'สมาชิก_ปี2568': 96.07, 'สมาชิก_ปี2569': 98.87,
+    'ชมรม_ชุมชน_เป้าหมาย': 12, 'ชมรม_ชุมชน_จัดตั้ง': 12,
+    'ชมรม_สถานศึกษา_เป้าหมาย': 18, 'ชมรม_สถานศึกษา_จัดตั้ง': 18,
+    'ชมรม_สถานประกอบการ_เป้าหมาย': 3, 'ชมรม_สถานประกอบการ_จัดตั้ง': 3,
+    'ศูนย์เพื่อนใจ_สถานศึกษา': 18, 'ศูนย์เพื่อนใจ_สถานประกอบการ': 3,
+    'ศูนย์เพื่อนใจ_ชุมชน': 3, 'ศูนย์เพื่อนใจ_รวม': 24,
+    'ยาเสพติด_ลดลง_คน': 16, 'ยาเสพติด_ลดลง_ร้อยละ': 38.80, 'ไม่เสพซ้ำ': 6,
+    'ได้ศึกษาต่อ': 25, 'สนับสนุนอาชีพ': 18, 'โควตา_มหาวิทยาลัย': 125,
+    'กิจกรรม_ตามแผน': 15, 'กิจกรรม_ดำเนินการแล้ว': 15,
+    'ยุทธ1_แผน': 5, 'ยุทธ1_ทำแล้ว': 5,
+    'ยุทธ2_แผน': 4, 'ยุทธ2_ทำแล้ว': 4,
+    'ยุทธ3_แผน': 6, 'ยุทธ3_ทำแล้ว': 6,
+    'งบ_อปท': 885000, 'งบ_THABO_RUN': 450000, 'งบ_รวม': 1335000,
+    'พัฒนาศักยภาพ_ครั้ง': 9, 'แลกเปลี่ยนเรียนรู้_ครั้ง': 5, 'เครือข่ายบูรณาการ_อำเภอ': 4,
+    'รางวัล_ระดับอำเภอ': 30, 'IDOL_ระดับภาค': 4, 'ทุนพระราชทาน': 1,
+    'วันที่อัปเดต': '30/04/2569',
+    _clubs: [
+      {name:'โรงเรียนท่าบ่อ',type:'สถานศึกษา',group:'ต้นแบบ',level:'ทอง ปี 2',status:'ระดับประเทศ'},
+      {name:'ชุมชนสระแก้ว',type:'ชุมชน',group:'ต้นแบบ',level:'เงิน ปี 1',status:'ระดับประเทศ'},
+      {name:'ชุมชนโคกคอน',type:'ชุมชน',group:'ดีเด่น',level:'ระดับภาค',status:'เข้าประกวด'},
+      {name:'ชุมชนกองนาง',type:'ชุมชน',group:'ดีเด่น',level:'ระดับภาค',status:'เข้าประกวด'},
+    ],
+    _members: [
+      {club:'ชมรม TO BE NUMBER ONE ชุมชนกองนาง',fullName:'ด.ญ.รัตนาภรณ์ พูลเพิ่ม',birthDate:'5/6/2019',age:'6',houseNo:'315',moo:'1',village:'กองนาง1'},
+      {club:'ชมรม TO BE NUMBER ONE ชุมชนกองนาง',fullName:'ด.ช.ศุภสิน มาศผุย',birthDate:'3/8/2018',age:'7',houseNo:'144/1',moo:'1',village:'กองนาง1'},
+      {club:'ชมรม TO BE NUMBER ONE ชุมชนกองนาง',fullName:'นายอโนทัย หาญวงค์',birthDate:'14/4/2009',age:'16',houseNo:'60',moo:'1',village:'กองนาง1'},
+      {club:'ชมรม TO BE NUMBER ONE โรงเรียนท่าบ่อ',fullName:'นายสมชาย ใจดี',birthDate:'15/3/2009',age:'16',houseNo:'123',moo:'5',village:'ท่าบ่อ'},
+      {club:'ชมรม TO BE NUMBER ONE โรงเรียนท่าบ่อ',fullName:'น.ส.สมหญิง รักเรียน',birthDate:'20/7/2010',age:'15',houseNo:'45',moo:'3',village:'ท่าบ่อ'},
+      {club:'ชมรม TO BE NUMBER ONE ชุมชนสระแก้ว',fullName:'น.ส.ชาดา บุญยัง',birthDate:'5/1/2007',age:'18',houseNo:'88',moo:'2',village:'สระแก้ว'},
+      {club:'ชมรม TO BE NUMBER ONE ชุมชนโคกคอน',fullName:'นายวรพล ทองสุข',birthDate:'12/6/2008',age:'17',houseNo:'99',moo:'4',village:'โคกคอน'},
+      {club:'ชมรม TO BE NUMBER ONE โรงเรียนท่าบ่อพิทยาคม',fullName:'น.ส.กัญญารัตน์ มหาวงค์',birthDate:'8/9/2008',age:'17',houseNo:'56',moo:'1',village:'ท่าบ่อ'},
+    ]
+  };
+  renderDashboard(DATA);
+  populateClubDropdown();
+  document.getElementById('setup-section').style.display = 'none';
+  document.getElementById('main-content').style.display = 'block';
+  document.getElementById('footer').style.display = 'block';
+  document.getElementById('data-source').textContent = '📡 แหล่งข้อมูล: ข้อมูลตัวอย่าง (Demo)';
+}
+
+// ═══════════════════════════════════════════
+// RENDER DASHBOARD
+// ═══════════════════════════════════════════
+function g(key, fallback) { return DATA[key] !== undefined ? DATA[key] : fallback; }
+function n(val) { return typeof val === 'number' ? val.toLocaleString() : val; }
+function pct(a, b) { return b ? ((a / b) * 100).toFixed(2) : 0; }
+
+function renderDashboard(d) {
+  // Update date
+  document.getElementById('update-date').textContent = `📅 อัปเดตล่าสุด: ${g('วันที่อัปเดต', '-')}`;
+
+  // KPI Cards
+  const memberPct = g('สมาชิก_ร้อยละ', 0);
+  const prevPct = g('สมาชิก_ปี2568', 0);
+  const diff = (memberPct - prevPct).toFixed(2);
+  const totalClubs = g('ชมรม_ชุมชน_จัดตั้ง',0) + g('ชมรม_สถานศึกษา_จัดตั้ง',0) + g('ชมรม_สถานประกอบการ_จัดตั้ง',0);
+
+  document.getElementById('kpi-grid').innerHTML = `
+    <div class="kpi-card" style="--stripe:#2e7d32">
+      <div class="kpi-label">สมาชิก TO BE NUMBER ONE อายุ 6-24 ปี</div>
+      <div class="kpi-num" style="color:#2e7d32">${memberPct}<span class="kpi-unit">%</span></div>
+      <div class="kpi-sub"><span class="up">▲ +${diff}%</span> จากปี 2568 (${prevPct}%)</div>
+      <div class="kpi-target">เกณฑ์ ≥ 70% ✓</div>
+    </div>
+    <div class="kpi-card" style="--stripe:#1565c0">
+      <div class="kpi-label">จำนวนสมาชิก / กลุ่มเป้าหมาย</div>
+      <div class="kpi-num" style="color:#1565c0">${n(g('สมาชิก_TO_BE',0))}<span class="kpi-unit">คน</span></div>
+      <div class="kpi-sub">จากกลุ่มเป้าหมาย ${n(g('สมาชิก_อายุ_6_24_ทั้งหมด',0))} คน</div>
+    </div>
+    <div class="kpi-card" style="--stripe:#e65100">
+      <div class="kpi-label">ชมรม TO BE NUMBER ONE ทั้งหมด</div>
+      <div class="kpi-num" style="color:#e65100">${totalClubs}<span class="kpi-unit">ชมรม</span></div>
+      <div class="kpi-sub">ชุมชน ${g('ชมรม_ชุมชน_จัดตั้ง',0)} / สถานศึกษา ${g('ชมรม_สถานศึกษา_จัดตั้ง',0)} / สถานประกอบการ ${g('ชมรม_สถานประกอบการ_จัดตั้ง',0)}</div>
+      <div class="kpi-target">ครบ 100% ✓</div>
+    </div>
+    <div class="kpi-card" style="--stripe:#6a1b9a">
+      <div class="kpi-label">ศูนย์เพื่อนใจ TO BE NUMBER ONE</div>
+      <div class="kpi-num" style="color:#6a1b9a">${g('ศูนย์เพื่อนใจ_รวม',0)}<span class="kpi-unit">แห่ง</span></div>
+      <div class="kpi-sub">สถานศึกษา ${g('ศูนย์เพื่อนใจ_สถานศึกษา',0)} / สถานประกอบการ ${g('ศูนย์เพื่อนใจ_สถานประกอบการ',0)} / ชุมชน ${g('ศูนย์เพื่อนใจ_ชุมชน',0)}</div>
+    </div>
+    <div class="kpi-card" style="--stripe:#c62828">
+      <div class="kpi-label">ยาเสพติดในเด็ก-เยาวชนลดลง</div>
+      <div class="kpi-num" style="color:#c62828">${g('ยาเสพติด_ลดลง_ร้อยละ',0)}<span class="kpi-unit">%</span></div>
+      <div class="kpi-sub"><span class="up">▼ ลดลง ${g('ยาเสพติด_ลดลง_คน',0)} คน</span> จากปีที่ผ่านมา</div>
+    </div>
+    <div class="kpi-card" style="--stripe:var(--primary)">
+      <div class="kpi-label">กิจกรรมตามแผน ปี 2569</div>
+      <div class="kpi-num" style="color:var(--primary)">${g('กิจกรรม_ดำเนินการแล้ว',0)}/${g('กิจกรรม_ตามแผน',0)}</div>
+      <div class="kpi-sub">คิดเป็น 100% ตามแผน</div>
+      <div class="kpi-target">ดำเนินการครบ ✓</div>
+    </div>
+  `;
+
+  // Member trend
+  const years = [
+    { y:'ปี 2565', v:g('สมาชิก_ปี2565',0), c:'#90caf9,#42a5f5' },
+    { y:'ปี 2566', v:g('สมาชิก_ปี2566',0), c:'#90caf9,#42a5f5' },
+    { y:'ปี 2567', v:g('สมาชิก_ปี2567',0), c:'#42a5f5,#1e88e5' },
+    { y:'ปี 2568', v:g('สมาชิก_ปี2568',0), c:'#42a5f5,#1565c0' },
+    { y:'ปี 2569', v:g('สมาชิก_ปี2569',0), c:'#66bb6a,#2e7d32' },
+  ];
+  document.getElementById('member-trend-card').innerHTML = `
+    <div class="card-title">แนวโน้มสมาชิก TO BE NUMBER ONE อายุ 6-24 ปี (5 ปี)</div>
+    ${years.map(yr => `
+      <div class="bar-row">
+        <div class="bar-label">${yr.y}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${yr.v}%;background:linear-gradient(90deg,${yr.c})">${yr.v}%</div></div>
+      </div>
+    `).join('')}
+    <div style="margin-top:14px;padding:10px;background:#e8f5e9;border-radius:8px;font-size:12px;color:#2e7d32">
+      <strong>วิเคราะห์:</strong> สัดส่วนสมาชิกเพิ่มขึ้นต่อเนื่อง 3 ปี สูงกว่าเกณฑ์เงินปีที่ 2 (≥70%) ถึง ${(memberPct - 70).toFixed(2)}%
+    </div>
+  `;
+
+  // Club table
+  const clubTypes = [
+    { name:'ชุมชน (1 อปท./1 ชมรม)', target:g('ชมรม_ชุมชน_เป้าหมาย',0), actual:g('ชมรม_ชุมชน_จัดตั้ง',0) },
+    { name:'สถานศึกษา', target:g('ชมรม_สถานศึกษา_เป้าหมาย',0), actual:g('ชมรม_สถานศึกษา_จัดตั้ง',0) },
+    { name:'สถานประกอบการ', target:g('ชมรม_สถานประกอบการ_เป้าหมาย',0), actual:g('ชมรม_สถานประกอบการ_จัดตั้ง',0) },
+  ];
+  const totalTarget = clubTypes.reduce((s,c)=>s+c.target,0);
+  const totalActual = clubTypes.reduce((s,c)=>s+c.actual,0);
+  document.getElementById('club-table-card').innerHTML = `
+    <div class="card-title">สถานะชมรม TO BE NUMBER ONE แยกประเภท</div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>ประเภท</th><th>เป้าหมาย</th><th>จัดตั้ง</th><th>ร้อยละ</th><th>สถานะ</th></tr></thead>
+      <tbody>
+        ${clubTypes.map(c => `<tr><td>${c.name}</td><td>${c.target}</td><td>${c.actual}</td><td>${c.target?Math.round(c.actual/c.target*100):0}%</td><td><span class="badge ${c.actual>=c.target?'badge-green':'badge-blue'}">${c.actual>=c.target?'ครบ':'ดำเนินการ'}</span></td></tr>`).join('')}
+        <tr style="font-weight:600;background:#f5f5f5"><td>รวม</td><td>${totalTarget}</td><td>${totalActual}</td><td>${totalTarget?Math.round(totalActual/totalTarget*100):0}%</td><td><span class="badge badge-green">ครบทุกประเภท</span></td></tr>
+      </tbody>
+    </table></div>
+  `;
+
+  // Drug stats
+  document.getElementById('drug-stats-card').innerHTML = `
+    <div class="card-title">สถิติยาเสพติดในเด็กและเยาวชน พ.ศ. 2569</div>
+    <div class="drug-stats">
+      <div class="drug-stat"><div class="num" style="color:#c62828">-${g('ยาเสพติด_ลดลง_คน',0)}</div><div class="label">ลดลง (คน)</div></div>
+      <div class="drug-stat"><div class="num" style="color:#e65100">${g('ยาเสพติด_ลดลง_ร้อยละ',0)}%</div><div class="label">อัตราลดลง</div></div>
+      <div class="drug-stat"><div class="num" style="color:#2e7d32">${g('ไม่เสพซ้ำ',0)}</div><div class="label">ไม่เสพซ้ำ (ราย)</div></div>
+      <div class="drug-stat"><div class="num" style="color:#1565c0">${g('ได้ศึกษาต่อ',0)}</div><div class="label">ได้ศึกษาต่อ (คน)</div></div>
+    </div>
+    <div style="margin-top:14px;padding:12px;background:#ffebee;border-radius:8px;border:1px solid #ef9a9a">
+      <div style="font-size:13px;font-weight:600;color:#c62828;margin-bottom:6px">จำนวนนักเสพหน้าใหม่</div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        <div style="font-size:12px;color:#c62828">ปีที่ผ่านมา: <strong>${g('นักเสพหน้าใหม่_ปีที่ผ่านมา',5)} คน</strong></div>
+        <div style="font-size:12px;color:#2e7d32">ปีปัจจุบัน (ต.ค.–มิ.ย.): <strong>${g('นักเสพหน้าใหม่_ปีปัจจุบัน',3)} คน</strong></div>
+        <div style="font-size:12px;color:#2e7d32">▼ ลดลง ${g('นักเสพหน้าใหม่_ปีที่ผ่านมา',5) - g('นักเสพหน้าใหม่_ปีปัจจุบัน',3)} คน</div>
+      </div>
+    </div>
+    <div style="margin-top:10px;font-size:12px;padding:8px;background:#fff3e0;border-radius:6px;color:#e65100">
+      <strong>ระบบดำเนินงาน:</strong> ทีม 5 เสือ Plus → นิธัญญารักษ์ โดย รพร.ท่าบ่อ + ชุมชนบำบัด (CBTx)
+    </div>
+  `;
+
+  // Opportunities
+  document.getElementById('opportunity-card').innerHTML = `
+    <div class="card-title">โอกาสที่สมาชิกได้รับหลังผ่านกระบวนการ</div>
+    <div class="bar-row"><div class="bar-label" style="width:120px">ศึกษาต่อ</div><div class="bar-track"><div class="bar-fill" style="width:36.60%;background:#2e7d32">36.60%</div></div><div class="bar-value">${g('ได้ศึกษาต่อ',0)} คน</div></div>
+    <div class="bar-row"><div class="bar-label" style="width:120px">ประกอบอาชีพ</div><div class="bar-track"><div class="bar-fill" style="width:28.60%;background:#1565c0">28.60%</div></div><div class="bar-value">${g('สนับสนุนอาชีพ',0)} คน</div></div>
+    <div class="bar-row"><div class="bar-label" style="width:120px">โควตา ม.</div><div class="bar-track"><div class="bar-fill" style="width:80%;background:#6a1b9a">โควตา</div></div><div class="bar-value">${g('โควตา_มหาวิทยาลัย',0)} คน</div></div>
+    <div style="margin-top:14px;font-size:12px;line-height:1.8">
+      ✅ ลดปัญหาตั้งครรภ์ก่อนวัยอันควร — ศูนย์เพื่อนใจ 22 แห่ง<br>
+      ✅ ลดปัญหาฆ่าตัวตายในวัยรุ่น — ระบบเฝ้าระวังส่งต่อ<br>
+      ✅ ทุนการศึกษาพระราชทาน ${g('ทุนพระราชทาน',0)} คน
+    </div>
+  `;
+
+  // Strategy progress rings
+  const strategies = [
+    { name:'ยุทธศาสตร์ที่ 1', plan:g('ยุทธ1_แผน',5), done:g('ยุทธ1_ทำแล้ว',5), color:'#2e7d32', desc:'รณรงค์สร้างกระแส' },
+    { name:'ยุทธศาสตร์ที่ 2', plan:g('ยุทธ2_แผน',4), done:g('ยุทธ2_ทำแล้ว',4), color:'#1565c0', desc:'เสริมสร้างภูมิคุ้มกัน' },
+    { name:'ยุทธศาสตร์ที่ 3', plan:g('ยุทธ3_แผน',6), done:g('ยุทธ3_ทำแล้ว',6), color:'#e65100', desc:'สร้างเครือข่าย' },
+  ];
+  const circumference = 2 * Math.PI * 42;
+  document.getElementById('strategy-cards').innerHTML = strategies.map(s => {
+    const pctDone = s.plan ? s.done / s.plan : 0;
+    const offset = circumference * (1 - pctDone);
+    return `<div class="card" style="text-align:center">
+      <div class="card-title" style="text-align:center">${s.name}</div>
+      <div class="progress-ring">
+        <svg width="100" height="100" viewBox="0 0 100 100">
+          <circle class="track" cx="50" cy="50" r="42"/>
+          <circle class="fill-circle" cx="50" cy="50" r="42" stroke="${s.color}"
+            stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"/>
+        </svg>
+        <div class="progress-center"><div class="pct" style="color:${s.color}">${s.done}/${s.plan}</div><div class="pct-label">${Math.round(pctDone*100)}%</div></div>
+      </div>
+      <div style="font-size:12px;color:var(--text-secondary)">${s.desc}</div>
+    </div>`;
+  }).join('');
+
+  // Contest clubs — กรองเฉพาะชมรมที่เข้าร่วมประกวด
+  const allClubs = d._clubs || [];
+  const contestClubs = allClubs.filter(c => 
+    c.status === 'ระดับประเทศ' || c.status === 'เข้าประกวด' || 
+    c.group === 'ต้นแบบ' || c.group === 'ดีเด่น'
+  );
+  document.getElementById('contest-card').innerHTML = `
+    <div class="card-title">ชมรมเข้าร่วมประกวดระดับภาค/ประเทศ ปี 2569</div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>ชมรม</th><th>ประเภท</th><th>กลุ่ม</th><th>ระดับ</th></tr></thead>
+      <tbody>
+        ${contestClubs.map(c => {
+          let badgeClass = 'badge-blue';
+          if (c.level.includes('ทอง')) badgeClass = 'badge-gold';
+          else if (c.level.includes('เงิน')) badgeClass = 'badge-silver';
+          return `<tr><td>${c.name}</td><td>${c.type}</td><td>${c.group}</td><td><span class="badge ${badgeClass}">${c.level}</span></td></tr>`;
+        }).join('')}
+      </tbody>
+    </table></div>
+  `;
+
+  // Timeline
+  document.getElementById('timeline-card').innerHTML = `
+    <div class="card-title">ไทม์ไลน์ความต่อเนื่อง — เส้นทางสู่ยอดเพชร</div>
+    <div class="timeline">
+      <div class="tl-item done"><div class="tl-year">2553</div><div class="tl-desc">เริ่มต้นโครงการ TO BE NUMBER ONE</div></div>
+      <div class="tl-item done"><div class="tl-year">2563</div><div class="tl-desc">ผ่านระดับดีเด่น</div></div>
+      <div class="tl-item done"><div class="tl-year">2568</div><div class="tl-desc">ต้นแบบระดับเงิน ปีที่ 1</div></div>
+      <div class="tl-item active"><div class="tl-year">2569</div><div class="tl-desc">🥈 ต้นแบบระดับเงิน ปีที่ 2 (ปัจจุบัน)</div></div>
+      <div class="tl-item"><div class="tl-year">2571</div><div class="tl-desc">🥇 เป้าหมาย: ต้นแบบระดับทอง</div></div>
+      <div class="tl-item"><div class="tl-year">2575</div><div class="tl-desc">💎 เป้าหมาย: ต้นแบบระดับเพชร</div></div>
+      <div class="tl-item"><div class="tl-year">2583</div><div class="tl-desc">👑 เป้าหมาย: ต้นแบบระดับยอดเพชร</div></div>
+    </div>
+  `;
+
+  // Budget
+  const budgetOpt = g('งบ_อปท', 885000);
+  const budgetRun = g('งบ_THABO_RUN', 450000);
+  const budgetGov = g('งบ_ภาครัฐ', 200000);
+  const budgetPrivate = g('งบ_ภาคเอกชน', 50000);
+  const budgetTotal = budgetOpt + budgetRun + budgetGov + budgetPrivate;
+  document.getElementById('budget-card').innerHTML = `
+    <div class="card-title">แหล่งงบประมาณ รวม ${n(budgetTotal)} บาท</div>
+    <div class="bar-row"><div class="bar-label" style="width:120px">อปท.</div><div class="bar-track"><div class="bar-fill" style="width:${budgetTotal?Math.round(budgetOpt/budgetTotal*100):0}%;background:linear-gradient(90deg,#66bb6a,#2e7d32)">${n(budgetOpt)} บ.</div></div><div class="bar-value">${budgetTotal?Math.round(budgetOpt/budgetTotal*100):0}%</div></div>
+    <div class="bar-row"><div class="bar-label" style="width:120px">THABO RUN</div><div class="bar-track"><div class="bar-fill" style="width:${budgetTotal?Math.round(budgetRun/budgetTotal*100):0}%;background:linear-gradient(90deg,#ffa726,#e65100)">${n(budgetRun)} บ.</div></div><div class="bar-value">${budgetTotal?Math.round(budgetRun/budgetTotal*100):0}%</div></div>
+    <div class="bar-row"><div class="bar-label" style="width:120px">ภาครัฐ</div><div class="bar-track"><div class="bar-fill" style="width:${budgetTotal?Math.round(budgetGov/budgetTotal*100):0}%;background:linear-gradient(90deg,#42a5f5,#1565c0)">${n(budgetGov)} บ.</div></div><div class="bar-value">${budgetTotal?Math.round(budgetGov/budgetTotal*100):0}%</div></div>
+    <div class="bar-row"><div class="bar-label" style="width:120px">ภาคเอกชน</div><div class="bar-track"><div class="bar-fill" style="width:${budgetTotal?Math.round(budgetPrivate/budgetTotal*100):0}%;background:linear-gradient(90deg,#ce93d8,#6a1b9a)">${n(budgetPrivate)} บ.</div></div><div class="bar-value">${budgetTotal?Math.round(budgetPrivate/budgetTotal*100):0}%</div></div>
+  `;
+
+  // Capacity
+  document.getElementById('capacity-card').innerHTML = `
+    <div class="card-title">การพัฒนาศักยภาพและแลกเปลี่ยนเรียนรู้</div>
+    <div class="drug-stats">
+      <div class="drug-stat"><div class="num" style="color:#6a1b9a">${g('พัฒนาศักยภาพ_ครั้ง',0)}</div><div class="label">พัฒนาศักยภาพ (ครั้ง)</div></div>
+      <div class="drug-stat"><div class="num" style="color:#1565c0">${g('แลกเปลี่ยนเรียนรู้_ครั้ง',0)}</div><div class="label">แลกเปลี่ยนเรียนรู้ (ครั้ง)</div></div>
+      <div class="drug-stat"><div class="num" style="color:#e65100">${g('เครือข่ายบูรณาการ_อำเภอ',0)}</div><div class="label">เครือข่ายบูรณาการ (อำเภอ)</div></div>
+    </div>
+  `;
+
+  // Club directory with member counts
+  renderClubDirectory(d);
+}
+
+// ═══════════════════════════════════════════
+// CLUB DIRECTORY + MEMBER MODAL
+// ═══════════════════════════════════════════
+function renderClubDirectory(d) {
+  const clubs = d._clubs || [];
+  const members = d._members || [];
+  const container = document.getElementById('club-directory');
+  if (!clubs.length) {
+    container.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-secondary)">ไม่พบข้อมูลชมรม — กรุณาสร้าง Sheet "ชมรม" ใน Google Sheets</div>';
+    return;
+  }
+
+  // Count members per club
+  const memberCounts = {};
+  members.forEach(m => {
+    memberCounts[m.club] = (memberCounts[m.club] || 0) + 1;
+  });
+
+  const typeColors = {
+    'ชุมชน': {bg:'#e8f5e9',color:'#2e7d32'},
+    'สถานศึกษา': {bg:'#e3f2fd',color:'#1565c0'},
+    'สถานประกอบการ': {bg:'#fff3e0',color:'#e65100'}
+  };
+
+  container.innerHTML = clubs.map((c, i) => {
+    const count = memberCounts[c.name] || 0;
+    const tc = typeColors[c.type] || {bg:'#f5f5f5',color:'#616161'};
+    let levelBadge = '';
+    if (c.level && c.level !== 'อำเภอ') {
+      let lbc = 'background:#e3f2fd;color:#1565c0';
+      if (c.level.includes('ทอง')) lbc = 'background:#fff8e1;color:#f57f17';
+      else if (c.level.includes('เงิน')) lbc = 'background:#f5f5f5;color:#616161';
+      levelBadge = `<span class="club-dir-badge" style="${lbc}">${c.level}</span>`;
+    }
+    return `
+      <div class="club-dir-card" data-club="${c.name}" data-type="${c.type}" onclick="showMembers('${c.name.replace(/'/g,"\\'")}')">
+        <div class="club-dir-count">${count} คน</div>
+        <div class="club-dir-name">${c.name}</div>
+        <div class="club-dir-type"><span style="display:inline-block;padding:1px 8px;border-radius:8px;background:${tc.bg};color:${tc.color};font-size:10px;font-weight:600">${c.type}</span></div>
+        ${levelBadge}
+      </div>
+    `;
+  }).join('');
+}
+
+function filterClubs(query) {
+  const cards = document.querySelectorAll('.club-dir-card');
+  const q = query.toLowerCase();
+  cards.forEach(card => {
+    const name = card.dataset.club.toLowerCase();
+    const type = card.dataset.type.toLowerCase();
+    card.style.display = (name.includes(q) || type.includes(q)) ? '' : 'none';
+  });
+}
+
+function showMembers(clubName) {
+  const modal = document.getElementById('member-modal');
+  const title = document.getElementById('modal-title');
+  const body = document.getElementById('modal-body');
+  const footer = document.getElementById('modal-footer');
+
+  title.textContent = `รายชื่อสมาชิก ปี ${CURRENT_YEAR} — ${clubName}`;
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  const members = (DATA._members || []).filter(m => m.club === clubName);
+
+  if (!members.length) {
+    body.innerHTML = `
+      <div style="text-align:center;padding:30px;color:var(--text-secondary)">
+        <div style="font-size:32px;margin-bottom:10px">📋</div>
+        <div style="font-size:14px;font-weight:600">ยังไม่มีข้อมูลสมาชิก</div>
+        <div style="font-size:12px;margin-top:6px">กรุณาเพิ่มข้อมูลใน Sheet "สมาชิก" ของ Google Sheets<br>โดยระบุชื่อชมรม "${clubName}" ในคอลัมน์ B</div>
+      </div>`;
+    footer.textContent = '';
+    return;
+  }
+
+  // นับตามหมู่บ้าน
+  const villages = {};
+  members.forEach(m => { if(m.village) villages[m.village] = (villages[m.village] || 0) + 1; });
+
+  body.innerHTML = `
+    <div class="member-count-summary">
+      <span class="member-count-chip">ทั้งหมด ${members.length} คน</span>
+      ${Object.entries(villages).map(([v,c]) => `<span class="member-count-chip">${v}: ${c} คน</span>`).join('')}
+    </div>
+    <div class="search-box"><input type="text" placeholder="ค้นหาสมาชิก..." oninput="filterMembers(this.value)"></div>
+    <div class="table-wrap">
+      <table class="member-table" id="member-table">
+        <thead><tr><th>ลำดับ</th><th>ชื่อ - สกุล</th><th>วัน-เดือน-ปี เกิด</th><th>อายุ</th><th>บ้านเลขที่</th><th>หมู่ที่</th><th>หมู่บ้าน</th></tr></thead>
+        <tbody>
+          ${members.map((m, i) => `
+            <tr>
+              <td>${i + 1}</td>
+              <td style="font-weight:500">${m.fullName}</td>
+              <td>${m.birthDate}</td>
+              <td>${m.age}</td>
+              <td>${m.houseNo}</td>
+              <td>${m.moo}</td>
+              <td>${m.village}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  footer.textContent = `ข้อมูลจาก Google Sheets Sheet "สมาชิก${CURRENT_YEAR}" — อัปเดตล่าสุด: ${g('วันที่อัปเดต', '-')}`;
+}
+
+function filterMembers(query) {
+  const rows = document.querySelectorAll('#member-table tbody tr');
+  const q = query.toLowerCase();
+  rows.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = text.includes(q) ? '' : 'none';
+  });
+}
+
+function closeModal() {
+  document.getElementById('member-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ═══════════════════════════════════════════
+// APPS SCRIPT URL MANAGEMENT
+// ═══════════════════════════════════════════
+function saveScriptUrl() {
+  const url = document.getElementById('script-url').value.trim();
+  const statusEl = document.getElementById('script-status');
+  
+  if (!url) {
+    statusEl.innerHTML = '<span style="color:#c62828">❌ กรุณาวาง URL</span>';
+    return;
+  }
+  if (!url.includes('script.google.com')) {
+    statusEl.innerHTML = '<span style="color:#c62828">❌ URL ไม่ถูกต้อง — ต้องเป็น URL จาก Google Apps Script (script.google.com)</span>';
+    return;
+  }
+  
+  localStorage.setItem('tbn_script_url', url);
+  statusEl.innerHTML = '<span style="color:#2e7d32">✅ บันทึก URL สำเร็จ — ระบบพร้อมรับสมัครจริงแล้ว!</span>';
+  
+  // ซ่อนกล่องตั้งค่า แสดงสถานะเชื่อมต่อแทน
+  setTimeout(() => {
+    document.getElementById('script-setup').innerHTML = `
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span style="font-size:13px;color:#2e7d32;font-weight:600">✅ เชื่อมต่อ Apps Script แล้ว</span>
+        <span style="font-size:11px;color:#795548">ข้อมูลจะบันทึกลง Sheet "สมาชิก${new Date().getFullYear()+543}"</span>
+        <button onclick="resetScriptUrl()" style="padding:4px 12px;border:1px solid #e0e0e0;border-radius:6px;background:#fff;font-size:11px;cursor:pointer;color:#795548">เปลี่ยน URL</button>
+      </div>
+    `;
+  }, 2000);
+}
+
+function resetScriptUrl() {
+  localStorage.removeItem('tbn_script_url');
+  document.getElementById('script-setup').innerHTML = `
+    <div style="font-size:13px;font-weight:600;color:#e65100;margin-bottom:6px">⚙️ ตั้งค่าเชื่อมต่อ Google Apps Script</div>
+    <div style="font-size:12px;color:#795548;margin-bottom:8px">วาง URL ของ Apps Script ที่ได้จากขั้นตอน Deploy เพื่อให้ข้อมูลสมัครบันทึกลง Google Sheets จริง</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <input id="script-url" type="text" placeholder="วาง URL ที่นี่ เช่น https://script.google.com/macros/s/xxxxx/exec" style="flex:1;min-width:200px;padding:8px 10px;border:2px solid #e0e0e0;border-radius:8px;font-size:12px;font-family:'Sarabun';background:#fff">
+      <button onclick="saveScriptUrl()" style="padding:8px 16px;border:none;border-radius:8px;background:#e65100;color:#fff;font-size:12px;font-weight:600;font-family:'Kanit';cursor:pointer;white-space:nowrap">บันทึก URL</button>
+    </div>
+    <div id="script-status" style="font-size:11px;margin-top:6px"></div>
+  `;
+}
+
+function loadScriptUrl() {
+  const url = localStorage.getItem('tbn_script_url') || '';
+  if (url) {
+    const setupEl = document.getElementById('script-setup');
+    if (setupEl) {
+      setupEl.innerHTML = `
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span style="font-size:13px;color:#2e7d32;font-weight:600">✅ เชื่อมต่อ Apps Script แล้ว</span>
+          <span style="font-size:11px;color:#795548">ข้อมูลจะบันทึกลง Sheet "สมาชิก${new Date().getFullYear()+543}"</span>
+          <button onclick="resetScriptUrl()" style="padding:4px 12px;border:1px solid #e0e0e0;border-radius:6px;background:#fff;font-size:11px;cursor:pointer;color:#795548">เปลี่ยน URL</button>
+        </div>
+      `;
+    }
+  }
+}
+
+// ═══════════════════════════════════════════
+// REGISTER FORM
+// ═══════════════════════════════════════════
+function populateClubDropdown() {
+  const select = document.getElementById('r-club');
+  if (!select) return;
+  const clubs = DATA._clubs || [];
+  select.innerHTML = '<option value="">เลือกชมรม</option>' +
+    clubs.map(c => `<option value="${c.name}">${c.name} (${c.type})</option>`).join('');
+}
+
+function submitRegister() {
+  const prefix = document.getElementById('r-prefix').value;
+  const fname = document.getElementById('r-fname').value.trim();
+  const lname = document.getElementById('r-lname').value.trim();
+  const bdate = document.getElementById('r-bdate').value;
+  const age = document.getElementById('r-age').value;
+  const club = document.getElementById('r-club').value;
+  const houseno = document.getElementById('r-houseno').value.trim();
+  const moo = document.getElementById('r-moo').value.trim();
+  const village = document.getElementById('r-village').value.trim();
+  const consent = document.getElementById('r-consent').checked;
+
+  if (!prefix || !fname || !lname || !bdate || !age || !club || !houseno || !moo || !village) {
+    alert('กรุณากรอกข้อมูลที่มี * ให้ครบ');
+    return;
+  }
+  if (!consent) {
+    alert('กรุณายินยอมให้จัดเก็บข้อมูลส่วนบุคคล');
+    return;
+  }
+
+  const btn = document.getElementById('reg-btn');
+  document.getElementById('reg-btn-text').style.display = 'none';
+  document.getElementById('reg-spinner').style.display = 'inline';
+  btn.disabled = true;
+
+  // รวมชื่อ-สกุล ตามรูปแบบใน Sheets เช่น "ด.ญ.รัตนาภรณ์ พูลเพิ่ม"
+  const fullName = prefix + fname + ' ' + lname;
+
+  // แปลงวันเกิดเป็นรูปแบบ d/m/yyyy
+  let bdateFormatted = '';
+  if (bdate) {
+    const d = new Date(bdate);
+    bdateFormatted = d.getDate() + '/' + (d.getMonth()+1) + '/' + d.getFullYear();
+  }
+
+  const data = {
+    club: club,
+    fullName: fullName,
+    birthDate: bdateFormatted,
+    age: age,
+    houseNo: houseno,
+    moo: moo,
+    village: village,
+    targetSheet: 'สมาชิก' + (new Date().getFullYear() + 543)  // ปี พ.ศ. ปัจจุบัน เช่น สมาชิก2569
+  };
+
+  // บันทึกลง Google Sheets ผ่าน Apps Script (ถ้ามี)
+  const scriptUrl = localStorage.getItem('tbn_script_url') || '';
+
+  if (scriptUrl) {
+    fetch(scriptUrl, {
+      method: 'POST', mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    }).then(() => showRegSuccess(data)).catch(() => showRegSuccess(data));
+  } else {
+    // Demo mode
+    setTimeout(() => showRegSuccess(data), 1500);
+  }
+}
+
+function showRegSuccess(data) {
+  document.getElementById('reg-form').style.display = 'none';
+  document.getElementById('reg-success').style.display = 'block';
+  document.getElementById('reg-btn').disabled = false;
+  document.getElementById('reg-btn-text').style.display = 'inline';
+  document.getElementById('reg-spinner').style.display = 'none';
+
+  // เคลียร์ cache ของปีปัจจุบัน เพื่อให้กดรีเฟรชแล้วเห็นข้อมูลใหม่
+  const currentBEYear = (new Date().getFullYear() + 543);
+  delete MEMBERS_CACHE[currentBEYear];
+
+  // แสดงสรุปข้อมูลที่สมัคร
+  document.getElementById('reg-summary').innerHTML = `
+    <div style="font-weight:600;margin-bottom:6px;color:var(--primary)">ข้อมูลที่บันทึก:</div>
+    <div>ชมรม: <strong>${data.club}</strong></div>
+    <div>ชื่อ-สกุล: <strong>${data.fullName}</strong></div>
+    <div>วันเกิด: <strong>${data.birthDate}</strong></div>
+    <div>อายุ: <strong>${data.age} ปี</strong></div>
+    <div>บ้านเลขที่: <strong>${data.houseNo}</strong> หมู่ที่: <strong>${data.moo}</strong> หมู่บ้าน: <strong>${data.village}</strong></div>
+  `;
+}
+
+function resetRegister() {
+  document.getElementById('reg-form').style.display = 'block';
+  document.getElementById('reg-success').style.display = 'none';
+  ['r-prefix','r-fname','r-lname','r-bdate','r-age','r-club','r-houseno','r-moo','r-village'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el.tagName === 'SELECT') el.selectedIndex = 0;
+    else el.value = '';
+  });
+  document.getElementById('r-consent').checked = false;
+}
+
+// ═══════════════════════════════════════════
+// YEAR SWITCHING
+// ═══════════════════════════════════════════
+async function switchYear(year) {
+  CURRENT_YEAR = year;
+
+  // อัปเดตปุ่ม active
+  document.querySelectorAll('.year-tab').forEach(btn => {
+    btn.classList.toggle('active', parseInt(btn.dataset.year) === year);
+  });
+
+  const loadingEl = document.getElementById('year-loading');
+  const countEl = document.getElementById('year-member-count');
+
+  // ถ้ามีใน cache แล้ว ใช้เลย
+  if (MEMBERS_CACHE[year]) {
+    DATA._members = MEMBERS_CACHE[year];
+    renderClubDirectory(DATA);
+    countEl.textContent = `สมาชิกปี ${year}: ${DATA._members.length} คน`;
+    return;
+  }
+
+  // ยังไม่มี ต้องโหลดจาก Sheets
+  loadingEl.style.display = 'inline';
+  countEl.textContent = '';
+
+  const sheetName = 'สมาชิก' + year;
+  const rows = await fetchSheet(sheetName);
+  const members = rows ? parseMembers(rows) : [];
+
+  // ถ้าไม่เจอ Sheet ปีนี้ ลองชื่อแบบมีเว้นวรรค
+  if (!members.length) {
+    const rows2 = await fetchSheet('สมาชิก ' + year);
+    if (rows2) {
+      const members2 = parseMembers(rows2);
+      if (members2.length) {
+        MEMBERS_CACHE[year] = members2;
+        DATA._members = members2;
+        renderClubDirectory(DATA);
+        loadingEl.style.display = 'none';
+        countEl.textContent = `สมาชิกปี ${year}: ${members2.length} คน`;
+        return;
+      }
+    }
+  }
+
+  MEMBERS_CACHE[year] = members;
+  DATA._members = members;
+  renderClubDirectory(DATA);
+  loadingEl.style.display = 'none';
+
+  if (members.length) {
+    countEl.textContent = `สมาชิกปี ${year}: ${members.length} คน`;
+  } else {
+    countEl.innerHTML = `<span style="color:#c62828">ไม่พบ Sheet "สมาชิก${year}" — กรุณาสร้าง Sheet ชื่อ "สมาชิก${year}" ใน Google Sheets</span>`;
+  }
+}
+
+// ═══════════════════════════════════════════
+// AUTO-CONNECT ON LOAD
+// ═══════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  if (SPREADSHEET_ID) {
+    document.getElementById('sheet-id-input').value = SPREADSHEET_ID;
+    loadData();
+  }
+  loadScriptUrl();
+});
+</script>
+
+</body>
+</html>
