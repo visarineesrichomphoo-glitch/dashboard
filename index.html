@@ -231,6 +231,8 @@ transition:all .2s;font-family:'Kanit'
 <div class="card" id="member-trend-card"></div>
 <div class="card" id="club-table-card"></div>
 </div>
+<!-- กราฟจำนวนสมาชิกแต่ละชมรม -->
+<div class="card" id="club-member-chart" style="margin-top:16px"></div>
 </div>
 
 <!-- ผลบำบัด -->
@@ -317,7 +319,7 @@ transition:all .2s;font-family:'Kanit'
 
 <!-- ส่วนสมัครสมาชิก -->
 <div class="section">
-<div class="section-title"><div class="icon" style="background:#ff6f00">📝</div>สมัครสมาชิก TO BE NUMBER ONE อำเภอท่าบ่อ</div>
+<div class="section-title" id="register"><div class="icon" style="background:#ff6f00">📝</div>สมัครสมาชิก TO BE NUMBER ONE อำเภอท่าบ่อ</div>
 <div class="card" id="register-card">
 <div class="card-title" style="text-align:center;font-size:18px;margin-bottom:4px">📝 ฟอร์มสมัครสมาชิก TO BE NUMBER ONE</div>
 <p style="text-align:center;font-size:13px;color:var(--text-secondary);margin-bottom:16px">กรอกข้อมูลให้ครบแล้วกดสมัคร — ข้อมูลจะถูกบันทึกลง Google Sheets อัตโนมัติ</p>
@@ -688,7 +690,8 @@ function parseClubs(rows) {
     if (r.length >= 6) {
       clubs.push({
         name: r[1], type: r[2], group: r[3],
-        level: r[4], status: r[5], center: r[6] || ''
+        level: r[4], status: r[5], center: r[6] || '',
+        target: r[7] || ''
       });
     }
   }
@@ -714,6 +717,31 @@ function parseMembers(rows) {
     }
   }
   return members;
+}
+
+// แปลง Sheet เป้าหมาย → { ชื่อชมรม: { 2565: 300, 2566: 350, ... } }
+function parseTargets(rows) {
+  if (!rows || rows.length < 2) return {};
+  const targets = {};
+  // หา header เพื่อดูว่าปีไหนอยู่คอลัมน์ไหน
+  const headers = rows[0];
+  const yearCols = {};
+  for (let c = 3; c < headers.length; c++) {
+    const match = String(headers[c]).match(/(\d{4})/);
+    if (match) yearCols[parseInt(match[1])] = c;
+  }
+  
+  for (let i = 1; i < rows.length; i++) {
+    const r = rows[i];
+    const clubName = r[1];
+    if (!clubName) continue;
+    targets[clubName] = {};
+    for (const [year, col] of Object.entries(yearCols)) {
+      const val = parseInt(r[col]) || 0;
+      targets[clubName][year] = val;
+    }
+  }
+  return targets;
 }
 
 // ═══════════════════════════════════════════
@@ -751,6 +779,10 @@ async function loadData() {
   // Try loading clubs sheet
   const clubRows = await fetchSheet('ชมรม');
   DATA._clubs = clubRows ? parseClubs(clubRows) : [];
+
+  // Try loading targets sheet
+  const targetRows = await fetchSheet('เป้าหมาย');
+  DATA._targets = targetRows ? parseTargets(targetRows) : {};
 
   // Try loading members sheet for current year
   const memberSheetName = 'สมาชิก' + CURRENT_YEAR;
@@ -1039,7 +1071,106 @@ function renderDashboard(d) {
   `;
 
   // Club directory with member counts
+  renderClubMemberChart(d);
   renderClubDirectory(d);
+}
+
+// ═══════════════════════════════════════════
+// CLUB MEMBER CHART — กราฟจำนวนสมาชิกแต่ละชมรม
+// ═══════════════════════════════════════════
+function renderClubMemberChart(d) {
+  const container = document.getElementById('club-member-chart');
+  if (!container) return;
+
+  const clubs = d._clubs || [];
+  const members = d._members || [];
+  const targets = d._targets || {};
+
+  if (!clubs.length) {
+    container.innerHTML = '<div class="card-title">จำนวนสมาชิกแต่ละชมรม</div><div style="text-align:center;padding:20px;color:var(--text-secondary)">ไม่พบข้อมูลชมรม</div>';
+    return;
+  }
+
+  // นับจำนวนสมาชิกแต่ละชมรม
+  const memberCounts = {};
+  members.forEach(m => { memberCounts[m.club] = (memberCounts[m.club] || 0) + 1; });
+  const totalMembers = members.length;
+
+  // สร้างข้อมูลกราฟ
+  const chartData = clubs.map(c => {
+    const count = memberCounts[c.name] || 0;
+    const clubTargets = targets[c.name] || {};
+    const target = clubTargets[CURRENT_YEAR] || 0;
+    return {
+      name: c.name.replace('ชมรม TO BE NUMBER ONE ', ''),
+      fullName: c.name,
+      type: c.type,
+      count: count,
+      target: target,
+      pct: totalMembers ? (count / totalMembers * 100).toFixed(1) : 0,
+      targetPct: target ? (count / target * 100).toFixed(1) : '-'
+    };
+  }).sort((a, b) => b.count - a.count);
+
+  const maxVal = Math.max(...chartData.map(c => Math.max(c.count, c.target)), 1);
+  const hasTargets = chartData.some(c => c.target > 0);
+
+  const typeColors = { 'ชุมชน':'#2e7d32', 'สถานศึกษา':'#1565c0', 'สถานประกอบการ':'#e65100' };
+
+  container.innerHTML = `
+    <div class="card-title">จำนวนสมาชิกแต่ละชมรม — ปี ${CURRENT_YEAR} (รวม ${n(totalMembers)} คน)</div>
+    <div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;font-size:11px">
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:12px;border-radius:3px;background:#2e7d32"></span> ชุมชน</span>
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:12px;border-radius:3px;background:#1565c0"></span> สถานศึกษา</span>
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:12px;border-radius:3px;background:#e65100"></span> สถานประกอบการ</span>
+      ${hasTargets ? '<span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:4px;border-radius:2px;background:#c62828"></span> เป้าหมาย</span>' : ''}
+    </div>
+    <!-- ตาราง -->
+    <div class="table-wrap" style="margin-bottom:12px">
+    <table style="font-size:12px">
+      <thead><tr><th>ชมรม</th><th>ประเภท</th><th style="text-align:center">สมาชิก</th>${hasTargets?'<th style="text-align:center">เป้าหมาย</th><th style="text-align:center">% ถึงเป้า</th>':''}
+      <th style="text-align:center">สัดส่วน</th></tr></thead>
+      <tbody>
+        ${chartData.map(c => {
+          const color = typeColors[c.type]||'#616161';
+          const reachPct = c.target ? parseFloat(c.targetPct) : 0;
+          const reachColor = reachPct >= 100 ? '#2e7d32' : reachPct >= 80 ? '#e65100' : '#c62828';
+          return `<tr>
+            <td style="font-weight:500">${c.name}</td>
+            <td><span style="color:${color};font-weight:600;font-size:11px">${c.type}</span></td>
+            <td style="text-align:center;font-weight:700">${n(c.count)}</td>
+            ${hasTargets?`<td style="text-align:center">${c.target||'-'}</td><td style="text-align:center;font-weight:600;color:${reachColor}">${c.target?c.targetPct+'%':'-'}</td>`:''}
+            <td style="text-align:center">${c.pct}%</td>
+          </tr>`;
+        }).join('')}
+        <tr style="font-weight:700;background:#f5f5f5">
+          <td>รวมทั้งหมด</td><td></td>
+          <td style="text-align:center">${n(totalMembers)}</td>
+          ${hasTargets?`<td style="text-align:center">${n(chartData.reduce((s,c)=>s+c.target,0))}</td><td></td>`:''}
+          <td style="text-align:center">100%</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <!-- กราฟแท่ง -->
+    ${chartData.map(c => {
+      const color = typeColors[c.type]||'#616161';
+      const barW = maxVal?(c.count/maxVal*100):0;
+      const targetW = (c.target&&maxVal)?(c.target/maxVal*100):0;
+      return `<div style="margin-bottom:5px;display:flex;align-items:center;gap:8px">
+        <div style="width:130px;font-size:10px;text-align:right;color:var(--text-secondary);flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${c.fullName}">${c.name}</div>
+        <div style="flex:1;height:20px;background:#f0f0f0;border-radius:5px;overflow:visible;position:relative">
+          <div style="height:100%;width:${barW}%;background:${color};border-radius:5px;display:flex;align-items:center;padding-left:5px;font-size:9px;font-weight:600;color:#fff;min-width:fit-content;transition:width 1s ease">${c.count}</div>
+          ${c.target>0?`<div style="position:absolute;top:-2px;left:${targetW}%;width:2px;height:24px;background:#c62828;border-radius:1px" title="เป้าหมาย: ${c.target}"></div>`:''}
+        </div>
+        <div style="width:50px;font-size:10px;font-weight:600;text-align:right;flex-shrink:0;color:${color}">${c.pct}%</div>
+      </div>`;
+    }).join('')}
+    <div style="margin-top:10px;padding:8px;background:#f5f5f5;border-radius:6px;font-size:11px;color:var(--text-secondary)">
+      จำนวนสมาชิกนับจาก Sheet "สมาชิก${CURRENT_YEAR}" | สัดส่วนคิดจากรวม ${n(totalMembers)} คน
+      ${hasTargets?' | <span style="color:#c62828">เส้นแดง</span> = เป้าหมาย (จาก Sheet "เป้าหมาย")':''}
+    </div>
+  `;
 }
 
 // ═══════════════════════════════════════════
@@ -1351,6 +1482,7 @@ async function switchYear(year) {
   // ถ้ามีใน cache แล้ว ใช้เลย
   if (MEMBERS_CACHE[year]) {
     DATA._members = MEMBERS_CACHE[year];
+    renderClubMemberChart(DATA);
     renderClubDirectory(DATA);
     countEl.textContent = `สมาชิกปี ${year}: ${DATA._members.length} คน`;
     return;
@@ -1372,6 +1504,7 @@ async function switchYear(year) {
       if (members2.length) {
         MEMBERS_CACHE[year] = members2;
         DATA._members = members2;
+        renderClubMemberChart(DATA);
         renderClubDirectory(DATA);
         loadingEl.style.display = 'none';
         countEl.textContent = `สมาชิกปี ${year}: ${members2.length} คน`;
@@ -1382,6 +1515,7 @@ async function switchYear(year) {
 
   MEMBERS_CACHE[year] = members;
   DATA._members = members;
+  renderClubMemberChart(DATA);
   renderClubDirectory(DATA);
   loadingEl.style.display = 'none';
 
@@ -1401,6 +1535,14 @@ window.addEventListener('DOMContentLoaded', () => {
     loadData();
   }
   loadScriptUrl();
+  
+  // ถ้า URL มี #register ให้เลื่อนไปฟอร์มสมัครอัตโนมัติ
+  setTimeout(() => {
+    if (window.location.hash === '#register') {
+      const el = document.getElementById('register');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, 2000);
 });
 </script>
 
