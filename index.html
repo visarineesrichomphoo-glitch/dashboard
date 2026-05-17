@@ -1211,8 +1211,8 @@ function resetScriptUrl() {
 }
 
 function loadScriptUrl() {
-  const url = localStorage.getItem('tbn_script_url') || '';
-  if (url) {
+  const url = localStorage.getItem('tbn_script_url') || 'https://script.google.com/macros/s/AKfycbzJe1yZ6xFHdEcbrWriUIg0bN2CkkOveBUrnuw0ERXrKU6k974UHFXCTRpxYKriFDY1eg/exec';
+  if (url && url.includes('script.google.com')) {
     const setupEl = document.getElementById('script-setup');
     if (setupEl) {
       setupEl.innerHTML = `
@@ -1285,7 +1285,7 @@ function submitRegister() {
   };
 
   // บันทึกลง Google Sheets ผ่าน Apps Script (ถ้ามี)
-  const scriptUrl = localStorage.getItem('tbn_script_url') || '';
+  const scriptUrl = localStorage.getItem('tbn_script_url') || 'https://script.google.com/macros/s/AKfycbzJe1yZ6xFHdEcbrWriUIg0bN2CkkOveBUrnuw0ERXrKU6k974UHFXCTRpxYKriFDY1eg/exec';
 
   if (scriptUrl) {
     fetch(scriptUrl, {
