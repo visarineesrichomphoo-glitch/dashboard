@@ -221,44 +221,26 @@ transition:all .2s;font-family:'Kanit'
 <!-- MAIN CONTENT (hidden until data loaded) -->
 <div class="container" id="main-content" style="display:none">
 
-<!-- KPI CARDS -->
+<!-- ═══ KPI ภาพรวม ═══ -->
 <div class="kpi-grid" id="kpi-grid"></div>
 
-<!-- สมาชิกแนวโน้ม + ชมรม -->
+<!-- ═══ หมวดที่ 1: นโยบายและแผนการดำเนินงาน (8 คะแนน) ═══ -->
+
+<!-- สมาชิกแนวโน้ม + ตารางชมรม -->
 <div class="section">
 <div class="section-title"><div class="icon" style="background:#1565c0">📊</div>ข้อมูลสมาชิกและชมรม</div>
 <div class="grid-2">
 <div class="card" id="member-trend-card"></div>
 <div class="card" id="club-table-card"></div>
 </div>
+</div>
+
 <!-- กราฟจำนวนสมาชิกแต่ละชมรม -->
-<div class="card" id="club-member-chart" style="margin-top:16px"></div>
-</div>
-
-<!-- ผลบำบัด -->
 <div class="section">
-<div class="section-title"><div class="icon" style="background:#c62828">🏥</div>ผลการบำบัดรักษา — โครงการใครติดยายกมือขึ้น</div>
-<div class="grid-2">
-<div class="card" id="drug-stats-card"></div>
-<div class="card" id="opportunity-card"></div>
-</div>
+<div class="card" id="club-member-chart"></div>
 </div>
 
-<!-- กิจกรรมตามแผน -->
-<div class="section">
-<div class="section-title"><div class="icon" style="background:#ff6f00">📋</div>ผลดำเนินงานตามแผนและรางวัล</div>
-<div class="grid-3" id="strategy-cards"></div>
-</div>
-
-<!-- ชมรมประกวด + ไทม์ไลน์ -->
-<div class="section">
-<div class="grid-2">
-<div class="card" id="contest-card"></div>
-<div class="card" id="timeline-card"></div>
-</div>
-</div>
-
-<!-- งบประมาณ -->
+<!-- งบประมาณและการพัฒนา -->
 <div class="section">
 <div class="section-title"><div class="icon" style="background:#2e7d32">💰</div>งบประมาณและการพัฒนา</div>
 <div class="grid-2">
@@ -267,11 +249,22 @@ transition:all .2s;font-family:'Kanit'
 </div>
 </div>
 
+<!-- ═══ หมวดที่ 2: ผลการดำเนินงาน (15 คะแนน) ═══ -->
+
+<!-- กิจกรรมตามแผน 3 ยุทธศาสตร์ -->
+<div class="section">
+<div class="section-title"><div class="icon" style="background:#ff6f00">📋</div>ผลดำเนินงานตามแผน 3 ยุทธศาสตร์</div>
+<div class="grid-3" id="strategy-cards"></div>
+</div>
+
+<!-- ชมรมเข้าประกวด -->
+<div class="section">
+<div class="card" id="contest-card"></div>
+</div>
+
 <!-- ทะเบียนชมรมและรายชื่อสมาชิก -->
 <div class="section">
 <div class="section-title"><div class="icon" style="background:#1565c0">👥</div>ทะเบียนชมรมและรายชื่อสมาชิก TO BE NUMBER ONE — กดที่ชมรมเพื่อดูรายชื่อ</div>
-
-<!-- เลือกปี -->
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
 <span style="font-size:13px;font-weight:600;color:var(--text)">📅 เลือกปี:</span>
 <div id="year-tabs" style="display:flex;gap:6px;flex-wrap:wrap">
@@ -284,7 +277,6 @@ transition:all .2s;font-family:'Kanit'
 <span id="year-member-count" style="font-size:12px;color:var(--text-secondary)"></span>
 <span id="year-loading" style="font-size:12px;color:var(--accent);display:none">🔄 กำลังโหลด...</span>
 </div>
-
 <div class="search-box"><input type="text" id="club-search" placeholder="ค้นหาชมรม..." oninput="filterClubs(this.value)"></div>
 <div id="club-directory" class="club-dir-grid"></div>
 <div style="margin-top:12px;padding:10px;background:#e3f2fd;border-radius:8px;font-size:12px;color:#1565c0">
@@ -306,7 +298,27 @@ transition:all .2s;font-family:'Kanit'
 </div>
 </div>
 
-<!-- ช่องทางเข้าถึงและสมัครสมาชิก -->
+<!-- ═══ หมวดที่ 4: ความต่อเนื่อง (2 คะแนน) ═══ -->
+
+<!-- ไทม์ไลน์ — เส้นทางสู่ยอดเพชร -->
+<div class="section">
+<div class="card" id="timeline-card"></div>
+</div>
+
+<!-- ═══ หมวดที่ 3: ผลสำเร็จที่เป็นรูปธรรม (5 คะแนน) ═══ -->
+
+<!-- ผลบำบัด -->
+<div class="section">
+<div class="section-title"><div class="icon" style="background:#c62828">🏥</div>ผลการบำบัดรักษา — โครงการใครติดยายกมือขึ้น</div>
+<div class="grid-2">
+<div class="card" id="drug-stats-card"></div>
+<div class="card" id="opportunity-card"></div>
+</div>
+</div>
+
+<!-- ═══ ช่องทางเข้าถึงและสมัครสมาชิก ═══ -->
+
+<!-- ช่องทางเข้าถึง -->
 <div class="section">
 <div class="section-title"><div class="icon" style="background:#6a1b9a">🔗</div>ช่องทางเข้าถึงข้อมูลและสมัครสมาชิก</div>
 <div class="channel-grid">
@@ -317,7 +329,7 @@ transition:all .2s;font-family:'Kanit'
 </div>
 </div>
 
-<!-- ส่วนสมัครสมาชิก -->
+<!-- 11. ส่วนสมัครสมาชิก -->
 <div class="section">
 <div class="section-title" id="register"><div class="icon" style="background:#ff6f00">📝</div>สมัครสมาชิก TO BE NUMBER ONE อำเภอท่าบ่อ</div>
 <div class="card" id="register-card">
