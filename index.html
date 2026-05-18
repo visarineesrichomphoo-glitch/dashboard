@@ -922,6 +922,12 @@ function renderDashboard(d) {
       <div class="kpi-sub">คิดเป็น 100% ตามแผน</div>
       <div class="kpi-target">ดำเนินการครบ ✓</div>
     </div>
+    <div class="kpi-card" style="--stripe:#00838f">
+      <div class="kpi-label">สมาชิกประชาชนทั่วไป (25 ปีขึ้นไป)</div>
+      <div class="kpi-num" style="color:#00838f">${n(g('สมาชิก_ประชาชนทั่วไป',0))}<span class="kpi-unit">คน</span></div>
+      <div class="kpi-sub">จากประชาชนทั่วไป ${n(g('ประชาชนทั่วไป_ทั้งหมด',0))} คน</div>
+      <div style="margin-top:6px"><span style="display:inline-block;background:#e0f7fa;color:#00838f;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600">ครอบคลุมทุกกลุ่มวัย</span></div>
+    </div>
   `;
 
   // Member trend
@@ -1049,9 +1055,9 @@ function renderDashboard(d) {
     <div class="card-title">ไทม์ไลน์ความต่อเนื่อง — เส้นทางสู่ยอดเพชร</div>
     <div class="timeline">
       <div class="tl-item done"><div class="tl-year">2553</div><div class="tl-desc">เริ่มต้นโครงการ TO BE NUMBER ONE</div></div>
-      <div class="tl-item done"><div class="tl-year">2563</div><div class="tl-desc">ผ่านระดับดีเด่น</div></div>
-      <div class="tl-item done"><div class="tl-year">2568</div><div class="tl-desc">ต้นแบบระดับเงิน ปีที่ 1</div></div>
-      <div class="tl-item active"><div class="tl-year">2569</div><div class="tl-desc">🥈 ต้นแบบระดับเงิน ปีที่ 2 (ปัจจุบัน)</div></div>
+      <div class="tl-item done"><div class="tl-year">2567</div><div class="tl-desc">ผ่านระดับดีเด่น</div></div>
+      <div class="tl-item done"><div class="tl-year">2568</div><div class="tl-desc">🥈 ต้นแบบระดับเงิน ปีที่ 1</div></div>
+      <div class="tl-item active"><div class="tl-year">2569</div><div class="tl-desc">🏅 เข้าแข่งขันเพื่อให้ได้ต้นแบบระดับเงิน ปีที่ 2 (ปัจจุบัน)</div></div>
       <div class="tl-item"><div class="tl-year">2571</div><div class="tl-desc">🥇 เป้าหมาย: ต้นแบบระดับทอง</div></div>
       <div class="tl-item"><div class="tl-year">2575</div><div class="tl-desc">💎 เป้าหมาย: ต้นแบบระดับเพชร</div></div>
       <div class="tl-item"><div class="tl-year">2583</div><div class="tl-desc">👑 เป้าหมาย: ต้นแบบระดับยอดเพชร</div></div>
